@@ -1,24 +1,24 @@
 use SummitRTS;
 
 INSERT INTO STATUS (ID, Status, HtmlColor, HTML_Description)
-VALUES (1,'Down','#C70039','Red'),
-(2,'Up','#196f3d','Green'),
-(3,'Starting Up','#f1c40f','Yellow'),
-(4,'Shutting Down','#f39c12','Orange'),
-(5,'Submitted','#b2babb','Grey'),
-(6,'Queued','#fdfefe ','White'),
-(7,'Assigned','#85c1e9','SkyBlue'),
-(8,'Running','#2874a6','Blue'),
-(9,'Complete','#7dcea0','LightGreen'),
-(10,'Cancelled','#707b7c','Charcoal');
+VALUES (1,'Down','#CC0000','Red'),
+(2,'Up','#006633','Green'),
+(3,'Starting Up','#FFFF00','Yellow'),
+(4,'Shutting Down','#FF6600','Orange'),
+(5,'Submitted','#666666','Grey'),
+(6,'Queued','#FFFFFF','White'),
+(7,'Assigned','#6699FF','SkyBlue'),
+(8,'Running','#0066FF','Blue'),
+(9,'Complete','#00CC66','LightGreen'),
+(10,'Cancelled','#333333','Charcoal');
 
 INSERT INTO TEST_RESULT (ID, Name, HtmlColor, HTML_Description)
-VALUES (1,'PASS','#196f3d','Green'),
-(2,'FAIL','#C70039','Red'),
-(3,'CRITICAL','#f1c40f','Yellow'),
-(4,'AGENT_ERROR','#8e44ad','Purple'),
-(5,'ABORTED','#f39c12','Orange'), -- Orange
-(6,'UNKNOWN','#b2babb','Grey');
+VALUES (1,'PASS','#006633','Green'),
+(2,'FAIL','#CC0000','Red'),
+(3,'CRITICAL','#FFFF00','Yellow'),
+(4,'AGENT_ERROR','#9933FF','Purple'),
+(5,'ABORTED','#FF6600','Orange'),
+(6,'UNKNOWN','#666666','Grey');
 
 INSERT INTO QUEUE_MANAGER (Status_ID, Wait, Log_File)
 VALUES (1,60,'c"\\SummitRTS\\Queue_Manager\\Queue_Manager.log');
