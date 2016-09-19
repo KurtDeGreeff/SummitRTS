@@ -21,7 +21,7 @@ VALUES (1,'PASS','#006633','Green'),
 (6,'UNKNOWN','#666666','Grey');
 
 INSERT INTO QUEUE_MANAGER (Status_ID, Wait, Log_File)
-VALUES (1,60,'c"\\SummitRTS\\Queue_Manager\\Queue_Manager.log');
+VALUES (1,60,'c:\\SummitRTS\\Queue_Manager\\Queue_Manager.log');
 
 INSERT INTO RTS_PROPERTIES (Name, Val)
 VALUES ('WIN_SHARE','\\\\192.168.2.68\\dropbox'),('WIN_SHARE_USER','DeviceUser'),('WIN_SHARE_PASS','BelayTech2015'),('WIN_SHARE_SCRIPTS_DIR','\\sut-scripts\\WINDOWS'),('WIN_LOCAL_SCRIPTS_DIR','dropbox'),('WIN_LOGFILE_NAME','rts.log'),('WIN_RESULTS_SHARE','\\\\192.168.2.68\\share'),('LINUX_SHARED_DRIVE','/192.168.2.68/dropbox'),('LINUX_SHARE_USER','DeviceUser'),('LINUX_SHARE_PASS','BelayTech2015'),('LINUX_SHARE_SCRIPTS_DIR','/sut-scripts/LINUX'),('LINUX_LOCAL_SCRIPTS_DIR','/dropbox'),('LINUX_LOGFILE_NAME','rts.log'),('LINUX_RESULTS_SHARE','/192.168.2.68/share');
@@ -36,7 +36,7 @@ VALUES (1,'Windows','7','SP1','32','administrator','BelayTech2015','Windows','Wi
 (4,'Android','4','Base','32','root','BelayTech2015','Android','Android_4_test_vm');
 
 INSERT INTO AVAILABLE_SOFTWARE (ID, Software_ID, VM_Template_ID)
-VALUES ('1','1','1'),('2','1','2'),('3','2','3'),('4','2','4');
+VALUES ('1','1','1'),('2','1','2'),('3','2','3'),('4','2','3');
 
 INSERT INTO HYPERVISOR_TYPES(ID,Name)
 VALUES (1,'vSphere'),(2,'vmwks'),(3,'vBox');

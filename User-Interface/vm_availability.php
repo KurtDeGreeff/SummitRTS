@@ -25,15 +25,19 @@ $(document).ready(function() {
 				require_once 'components/Side_Bar.html';
 			?>
 			<div class="col-sm-9 col-md-10 col-lg-10 main">
-				<h3>Summit RTS Test Results</h3>
+				<h3>Summit RTS Available Template VMs per hypervisor</h3>
 				<div class="row">
+					<p>
+						<a href="createAvailTemplate.php" class="btn btn-success">Create</a>
+					</p>
 					<table id="example" class="table table-striped table-bordered">
 						<thead>
 							<tr>
 							<th>ID</th>
-							<th>Name</th>
-							<th>Status</th>
-							<th>Total_SUT</th>
+							<th>Hypervisor_IP</th>
+							<th>Ref_Name</th>
+							<th>Active</th>
+							<th>Tools_Available</th>
 							<th>date_modified</th>
 							<th>Action</th>
 							</tr>
@@ -42,23 +46,32 @@ $(document).ready(function() {
 							<?php 
 							include 'components/database.php';
 							$pdo = Database::connect();
-							$sql = 'select ts.ID,' 
-										. 'ts.Name,'
-										. 's.Status,'
-										. 's.HtmlColor,'
-										. 'ts.Total_SUT,'
-										. 'ts.date_modified '
-									. 'from test_suites ts '
-									. 'join status s on ts.Status_ID=s.ID ';
-	
+							$sql = 'select hv.ID,' 
+										. 'hv.Hypervisor_ID,'
+										. 'hv.VM_Template_ID,'
+										. 'hv.Active,'
+										. 'hv.Tools_Available,'
+										. 'vt.Ref_Name, '
+										. 'h.IP_Address, '
+										. 'hv.date_modified '
+									. 'from HYPERVISOR_VMS hv '
+									. 'join HYPERVISORS h on hv.Hypervisor_ID=h.ID '
+									. 'join VM_TEMPLATES vt on hv.VM_Template_ID=vt.ID ';
+							
 							foreach ($pdo->query($sql) as $row) {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
-								echo '<td>'. $row['Name'] . '</td>';
-								echo '<td bgcolor='. $row['HtmlColor'] .'>'. $row['Status'] . '</td>';
-								echo '<td>'. $row['Total_SUT'] . '</td>';
+								echo '<td>'. $row['Ref_Name'] . '</td>';
+								echo '<td>'. $row['IP_Address'] . '</td>';
+								echo '<td>'. $row['Active'] . '</td>';
+								echo '<td>'. $row['Tools_Available'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
-								echo '<td width=250><a class="btn" href="viewTestSuite.php?id='.$row['ID'].'">ViewTest</a></td>';
+							   	echo '<td>';							   	
+								echo '&nbsp;';
+							   	echo '<a class="btn btn-success" href="update.php?id='.$row['ID'].'">Update</a>';
+							   	echo '&nbsp;';
+							   	echo '<a class="btn btn-danger" href="delete.php?id='.$row['ID'].'">Delete</a>';
+							   	echo '</td>';
 								echo '</tr>';
 							}
 							Database::disconnect();

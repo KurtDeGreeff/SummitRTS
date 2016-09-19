@@ -25,15 +25,15 @@ $(document).ready(function() {
 				require_once 'components/Side_Bar.html';
 			?>
 			<div class="col-sm-9 col-md-10 col-lg-10 main">
-				<h3>Summit RTS Test Results</h3>
+				<h3>Summit RTS Queue Manager</h3>
 				<div class="row">
 					<table id="example" class="table table-striped table-bordered">
 						<thead>
 							<tr>
 							<th>ID</th>
-							<th>Name</th>
+							<th>Wait</th>
 							<th>Status</th>
-							<th>Total_SUT</th>
+							<th>Log_File</th>
 							<th>date_modified</th>
 							<th>Action</th>
 							</tr>
@@ -42,23 +42,24 @@ $(document).ready(function() {
 							<?php 
 							include 'components/database.php';
 							$pdo = Database::connect();
-							$sql = 'select ts.ID,' 
-										. 'ts.Name,'
-										. 's.Status,'
-										. 's.HtmlColor,'
-										. 'ts.Total_SUT,'
-										. 'ts.date_modified '
-									. 'from test_suites ts '
-									. 'join status s on ts.Status_ID=s.ID ';
+							$sql = 'select qm.ID, ' 
+										. 'qm.Status_ID, '
+										. 'qm.Wait, '
+										. 'qm.Log_File, '
+										. 'qm.date_modified, '
+										. 's.HtmlColor, '
+										. 's.Status '
+									. 'from QUEUE_MANAGER qm '
+									. 'join status s on qm.Status_ID=s.ID ';
 	
 							foreach ($pdo->query($sql) as $row) {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
-								echo '<td>'. $row['Name'] . '</td>';
+								echo '<td>'. $row['Wait'] . '</td>';
 								echo '<td bgcolor='. $row['HtmlColor'] .'>'. $row['Status'] . '</td>';
-								echo '<td>'. $row['Total_SUT'] . '</td>';
+								echo '<td>'. $row['Log_File'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
-								echo '<td width=250><a class="btn" href="viewTestSuite.php?id='.$row['ID'].'">ViewTest</a></td>';
+								echo '<td>Some button in the future</td>';
 								echo '</tr>';
 							}
 							Database::disconnect();

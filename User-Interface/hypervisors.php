@@ -25,15 +25,25 @@ $(document).ready(function() {
 				require_once 'components/Side_Bar.html';
 			?>
 			<div class="col-sm-9 col-md-10 col-lg-10 main">
-				<h3>Summit RTS Test Results</h3>
+				<h3>Summit RTS Available Software Information</h3>
 				<div class="row">
+					<p>
+						<a href="createHypervisor.php" class="btn btn-success">Create</a>
+					</p>
 					<table id="example" class="table table-striped table-bordered">
 						<thead>
 							<tr>
 							<th>ID</th>
 							<th>Name</th>
-							<th>Status</th>
-							<th>Total_SUT</th>
+							<th>Version</th>
+							<th>IP_Address</th>
+							<th>Username</th>
+							<th>Password</th>
+							<th>Mgmt_IP</th>
+							<th>Datacenter</th>
+							<th>Datastore</th>
+							<th>Active</th>
+							<th>Max_SUTS</th>
 							<th>date_modified</th>
 							<th>Action</th>
 							</tr>
@@ -42,23 +52,42 @@ $(document).ready(function() {
 							<?php 
 							include 'components/database.php';
 							$pdo = Database::connect();
-							$sql = 'select ts.ID,' 
-										. 'ts.Name,'
-										. 's.Status,'
-										. 's.HtmlColor,'
-										. 'ts.Total_SUT,'
-										. 'ts.date_modified '
-									. 'from test_suites ts '
-									. 'join status s on ts.Status_ID=s.ID ';
-	
+							$sql = 'select h.ID, ' 
+										. 'ht.Name, '
+										. 'h.Version, '
+										. 'h.IP_Address, '
+										. 'h.Username, '
+										. 'h.Password, '
+										. 'h.Mgmt_IP, '
+										. 'h.Datacenter, '
+										. 'h.Datastore, '
+										. 'h.Active, '
+										. 'h.Max_Concurrent_SUTS, '
+										. 'h.date_modified, '
+										. 'h.Hypervisor_Type_ID '
+									. 'from HYPERVISORS h '
+									. 'join HYPERVISOR_TYPES ht on h.Hypervisor_Type_ID=ht.ID ';
+							
 							foreach ($pdo->query($sql) as $row) {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['Name'] . '</td>';
-								echo '<td bgcolor='. $row['HtmlColor'] .'>'. $row['Status'] . '</td>';
-								echo '<td>'. $row['Total_SUT'] . '</td>';
+								echo '<td>'. $row['Version'] . '</td>';
+								echo '<td>'. $row['IP_Address'] . '</td>';
+								echo '<td>'. $row['Username'] . '</td>';
+								echo '<td>'. $row['Password'] . '</td>';
+								echo '<td>'. $row['Mgmt_IP'] . '</td>';
+								echo '<td>'. $row['Datacenter'] . '</td>';
+								echo '<td>'. $row['Datastore'] . '</td>';
+								echo '<td>'. $row['Active'] . '</td>';
+								echo '<td>'. $row['Max_Concurrent_SUTS'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
-								echo '<td width=250><a class="btn" href="viewTestSuite.php?id='.$row['ID'].'">ViewTest</a></td>';
+							   	echo '<td>';							   	
+								echo '&nbsp;';
+							   	echo '<a class="btn btn-success" href="update.php?id='.$row['ID'].'">Update</a>';
+							   	echo '&nbsp;';
+							   	echo '<a class="btn btn-danger" href="delete.php?id='.$row['ID'].'">Delete</a>';
+							   	echo '</td>';
 								echo '</tr>';
 							}
 							Database::disconnect();

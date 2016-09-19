@@ -25,15 +25,19 @@ $(document).ready(function() {
 				require_once 'components/Side_Bar.html';
 			?>
 			<div class="col-sm-9 col-md-10 col-lg-10 main">
-				<h3>Summit RTS Test Results</h3>
+				<h3>Summit RTS Available Software Information</h3>
 				<div class="row">
+					<p>
+						<a href="createVMTemplate.php" class="btn btn-success">Create</a>
+					</p>
 					<table id="example" class="table table-striped table-bordered">
 						<thead>
 							<tr>
 							<th>ID</th>
+							<th>Ref_Name</th>
+							<th>Manufacturer</th>
 							<th>Name</th>
-							<th>Status</th>
-							<th>Total_SUT</th>
+							<th>Version</th>
 							<th>date_modified</th>
 							<th>Action</th>
 							</tr>
@@ -42,23 +46,32 @@ $(document).ready(function() {
 							<?php 
 							include 'components/database.php';
 							$pdo = Database::connect();
-							$sql = 'select ts.ID,' 
-										. 'ts.Name,'
-										. 's.Status,'
-										. 's.HtmlColor,'
-										. 'ts.Total_SUT,'
-										. 'ts.date_modified '
-									. 'from test_suites ts '
-									. 'join status s on ts.Status_ID=s.ID ';
-	
+							$sql = 'select a.ID,' 
+										. 'a.Software_ID,'
+										. 'a.VM_Template_ID,'
+										. 'vt.Ref_Name,'
+										. 's.Manufacturer,'
+										. 's.Name, '
+										. 's.Version, '
+										. 's.date_modified '
+									. 'from AVAILABLE_SOFTWARE a '
+									. 'join software s on a.Software_ID=s.ID '
+									. 'join VM_TEMPLATES vt on a.VM_Template_ID=vt.ID ';
+							
 							foreach ($pdo->query($sql) as $row) {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
+								echo '<td>'. $row['Ref_Name'] . '</td>';
+								echo '<td>'. $row['Manufacturer'] . '</td>';
 								echo '<td>'. $row['Name'] . '</td>';
-								echo '<td bgcolor='. $row['HtmlColor'] .'>'. $row['Status'] . '</td>';
-								echo '<td>'. $row['Total_SUT'] . '</td>';
+								echo '<td>'. $row['Version'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
-								echo '<td width=250><a class="btn" href="viewTestSuite.php?id='.$row['ID'].'">ViewTest</a></td>';
+							   	echo '<td>';							   	
+								echo '&nbsp;';
+							   	echo '<a class="btn btn-success" href="update.php?id='.$row['ID'].'">Update</a>';
+							   	echo '&nbsp;';
+							   	echo '<a class="btn btn-danger" href="delete.php?id='.$row['ID'].'">Delete</a>';
+							   	echo '</td>';
 								echo '</tr>';
 							}
 							Database::disconnect();
