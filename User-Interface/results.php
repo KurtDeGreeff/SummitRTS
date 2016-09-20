@@ -48,16 +48,16 @@ $(document).ready(function() {
 							$sql = 'select * from TEST_RESULT'; 
 							foreach ($pdo->query($sql) as $row) {
 								echo '<tr>';
-								echo '<td>'. $row['ID'] . '</td>';
-								echo '<td>'. $row['Name'] . '</td>';
-								echo '<td>'. $row['HtmlColor'] . '</td>';
-								echo '<td bgcolor='. $row['HtmlColor'] .'>'. $row['HTML_Description'] . '</td>';
-								echo '<td>'. $row['date_modified'] . '</td>';
-							   	echo '<td>';							   	
+								echo '<td>' . $row['ID'] . '</td>';
+								echo '<td>' . $row['Name'] . '</td>';
+								echo '<td>' . $row['HtmlColor'] . '</td>';
+								echo '<td bgcolor=' . $row['HtmlColor'] . '>' . $row['HTML_Description'] . '</td>';
+								echo '<td>' . $row['date_modified'] . '</td>';
+							   	echo '<td>';
 								echo '&nbsp;';
-							   	echo '<a class="btn btn-success" href="update.php?id='.$row['ID'].'">Update</a>';
+							   	echo '<a class="btn btn-success" href="update.php?id=' . $row['ID'] . '">Update</a>';
 							   	echo '&nbsp;';
-							   	echo '<a class="btn btn-danger" href="delete.php?id='.$row['ID'].'">Delete</a>';
+							   	echo '<a class="btn btn-danger" href="delete.php?id=' . $row['ID'] . '">Delete</a>';
 							   	echo '</td>';
 								echo '</tr>';
 							}
