@@ -45,13 +45,13 @@ $(document).ready(function() {
 							<?php 
 							include 'components/database.php';
 							$pdo = Database::connect();
-							$sql = 'select * from TEST_RESULT'; 
+							$sql = 'select * from TEST_RESULT';
 							foreach ($pdo->query($sql) as $row) {
 								echo '<tr>';
 								echo '<td>' . $row['ID'] . '</td>';
 								echo '<td>' . $row['Name'] . '</td>';
 								echo '<td>' . $row['HtmlColor'] . '</td>';
-								echo '<td bgcolor=' . $row['HtmlColor'] . '>' . $row['HTML_Description'] . '</td>';
+								echo '<td style=background-color:'. $row['HtmlColor'] . '>' . $row['HTML_Description'] . '</td>';
 								echo '<td>' . $row['date_modified'] . '</td>';
 							   	echo '<td>';
 								echo '&nbsp;';
