@@ -10,7 +10,9 @@ VALUES (1,'Down','#CC0000','Red'),
 (7,'Assigned','#6699FF','SkyBlue'),
 (8,'Running','#0066FF','Blue'),
 (9,'Complete','#00CC66','LightGreen'),
-(10,'Cancelled','#333333','Charcoal');
+(10,'Cancelled','#333333','Charcoal'),
+(11,'Enabled','#006633','Green'),
+(12,'Disabled','#CC0000','Red');
 
 INSERT INTO TEST_RESULT (ID, Name, HtmlColor, HTML_Description)
 VALUES (1,'PASS','#006633','Green'),
@@ -41,14 +43,14 @@ VALUES ('1','1','1'),('2','1','2'),('3','2','3'),('4','2','3');
 INSERT INTO HYPERVISOR_TYPES(ID,Name)
 VALUES (1,'vSphere'),(2,'vmwks'),(3,'vBox');
 
-INSERT INTO HYPERVISORS (ID, Hypervisor_Type_ID, IP_Address, Username, Password, Version, Mgmt_IP, Datacenter, Datastore, Max_Concurrent_SUTS, Active)
-VALUES (1,1,'192.168.10.55','administrator@vcenter6u1.local','BelayTech2016!','6','192.168.10.105','Device','datastore11',1,0),
-(2,1, '192.168.10.54','root','BelayTech2016','5','192.168.10.86','Device','datastore-1',1,1),
-(3,2,'127.0.0.1','administrator','BelayTech2016','12.0','127.0.0.1','Device','C:\\temp\\WKS',1,1),
-(4,3,'127.0.0.2','administrator','BelayTech2016','5.0.14','127.0.0.2','Device','C:\\temp\\vbox',1,1);
+INSERT INTO HYPERVISORS (ID, Hypervisor_Type_ID, IP_Address, Username, Password, Version, Mgmt_IP, Datacenter, Datastore, Max_Concurrent_SUTS, Status_ID)
+VALUES (1,1,'192.168.10.55','administrator@vcenter6u1.local','BelayTech2016!','6','192.168.10.105','Device','datastore11',1,12),
+(2,1, '192.168.10.54','root','BelayTech2016','5','192.168.10.86','Device','datastore-1',1,11),
+(3,2,'127.0.0.1','administrator','BelayTech2016','12.0','127.0.0.1','Device','C:\\temp\\WKS',1,11),
+(4,3,'127.0.0.2','administrator','BelayTech2016','5.0.14','127.0.0.2','Device','C:\\temp\\vbox',1,11);
 
-INSERT INTO HYPERVISOR_VMS(ID, Hypervisor_ID, VM_Template_ID, Active, Tools_Available)
-VALUES (1,1,1,1,1),(2,2,1,1,1),(3,3,1,1,1),(4,4,1,1,1),(5,1,2,0,1),(6,2,2,1,1),(7,3,2,1,1),(8,4,2,1,1),(9,1,3,0,1),(10,2,3,1,1),(11,3,3,0,1),(12,4,3,0,1),(13,1,4,0,0),(14,2,4,1,0),(15,3,4,0,0),(16,4,4,0,0);
+INSERT INTO HYPERVISOR_VMS(ID, Hypervisor_ID, VM_Template_ID, Status_ID, Tools_Available)
+VALUES (1,1,1,11,1),(2,2,1,11,1),(3,3,1,11,1),(4,4,1,11,1),(5,1,2,12,1),(6,2,2,11,1),(7,3,2,11,1),(8,4,2,11,1),(9,1,3,12,1),(10,2,3,11,1),(11,3,3,12,1),(12,4,3,12,1),(13,1,4,12,0),(14,2,4,11,0),(15,3,4,12,0),(16,4,4,12,0);
 
 INSERT INTO WORKFLOWS (ID, Name, Script_Path)
 VALUES (1,'TestCase_Default','c:\\SummitRTS\\TestCase_Default'),
@@ -57,8 +59,8 @@ VALUES (1,'TestCase_Default','c:\\SummitRTS\\TestCase_Default'),
 INSERT INTO AGENT_MANAGERS (ID, IP_Address, STATUS_ID, Wait, Logfile)
 VALUES (1, '127.0.0.1',1,60,'c:\\SummitRTS\\Agent_Manager\\Agent_Manager.log');
 
-INSERT INTO AVAILABLE_WORKFLOWS (ID, Agent_Mgr_ID, Hypervisor_ID, Workflow_ID, Active)
-VALUES (1,1,1,1,1),(2,1,1,2,1),(3,1,2,1,1),(4,1,2,2,1),(5,1,3,1,1),(6,1,3,2,1),(7,1,4,1,1),(8,1,4,2,1);
+INSERT INTO AVAILABLE_WORKFLOWS (ID, Agent_Mgr_ID, Hypervisor_ID, Workflow_ID, Status_ID)
+VALUES (1,1,1,1,11),(2,1,1,2,11),(3,1,2,1,11),(4,1,2,2,11),(5,1,3,1,11),(6,1,3,2,11),(7,1,4,1,11),(8,1,4,2,11);
 
 INSERT INTO TEST_SUITES (ID, Name, Status_ID, Total_SUT)
 VALUES (1,'Sampletest1',5,2),(2,'Sampletest2',9,2);

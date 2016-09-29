@@ -56,10 +56,10 @@ $(document).ready(function() {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['Wait'] . '</td>';
-								echo '<td bgcolor='. $row['HtmlColor'] .'>'. $row['Status'] . '</td>';
+								echo '<td style=background-color:'. $row['HtmlColor'] . '>'. $row['Status'] . '</td>';
 								echo '<td>'. $row['Log_File'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
-								echo '<td>Some button in the future</td>';
+								echo '<td width=250><a class="btn btn-info" href="UpdateQueueManager.php?id='.$row['ID'].'">UpdateMGR</a></td>';
 								echo '</tr>';
 							}
 							Database::disconnect();

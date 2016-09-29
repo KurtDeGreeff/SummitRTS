@@ -51,7 +51,7 @@ $(document).ready(function() {
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['Status'] . '</td>';
 								echo '<td>'. $row['HtmlColor'] . '</td>';
-								echo '<td bgcolor='. $row['HtmlColor'] .'>'. $row['HTML_Description'] . '</td>';
+								echo '<td style=background-color:'. $row['HtmlColor'] . '>'. $row['HTML_Description'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	
 								echo '&nbsp;';

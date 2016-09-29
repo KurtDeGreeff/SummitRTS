@@ -59,9 +59,7 @@
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	
 								echo '&nbsp;';
-							   	echo '<a class="btn btn-success" href="update.php?id='.$row['ID'].'">Update</a>';
-							   	echo '&nbsp;';
-							   	echo '<a class="btn btn-danger" href="delete.php?id='.$row['ID'].'">Delete</a>';
+							   	echo '<a class="btn btn-info" href="update.php?id='.$row['ID'].'">View Log</a>';
 							   	echo '</td>';
 								echo '</tr>';
 							}

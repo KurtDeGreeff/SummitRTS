@@ -90,7 +90,7 @@ $(document).ready(function() {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['Name'] . '</td>';
-								echo '<td bgcolor='. $row['HtmlColor'] .'>'. $row['Status'] . '</td>';
+								echo '<td style=background-color:'. $row['HtmlColor'] . '>'. $row['Status'] . '</td>';
 								echo '<td>'. $row['TestSuite_Name'] . '</td>';
 								echo '<td>'. $row['Ref_Name'] . '</td>';
 								echo '<td>'. $row['Hypervisor_Type'] . '</td>';
@@ -103,7 +103,7 @@ $(document).ready(function() {
 								echo '<td>'. $row['Remote_Console_URL'] . '</td>';
 								echo '<td>'. $row['Console_Active'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
-								echo '<td width=250><a class="btn" href="viewTestSuite.php?id='.$row['ID'].'">ViewTest</a></td>';
+								echo '<td width=250><a class="btn btn-info" href="viewTestSuite.php?id='.$row['ID'].'">ViewSUT</a></td>';
 								echo '</tr>';
 							}
 							Database::disconnect();

@@ -37,7 +37,7 @@ $(document).ready(function() {
 							<th>Agent_MGR_IP</th>
 							<th>Hypervisor_MGR</th>
 							<th>Workflow_Name</th>
-							<th>Active</th>
+							<th>Status</th>
 							<th>date_modified</th>
 							<th>Action</th>
 							</tr>
@@ -47,18 +47,21 @@ $(document).ready(function() {
 							include 'components/database.php';
 							$pdo = Database::connect();
 							$sql = 'select aw.ID, ' 
-										. 'aw.Active, '
 										. 'aw.Agent_Mgr_ID, '
 										. 'aw.Hypervisor_ID, '
 										. 'aw.Workflow_ID, '
+										. 'aw.Status_ID, '
 										. 'am.IP_Address, '
 										. 'h.Mgmt_IP, '
 										. 'w.Name, '
-										. 'am.date_modified '
+										. 'am.date_modified, '
+										. 's.Status, '
+										. 's.HtmlColor '
 									. 'from AVAILABLE_WORKFLOWS aw '
 									. 'join AGENT_MANAGERS am on aw.Agent_Mgr_ID=am.ID '
 									. 'join HYPERVISORS h on aw.Hypervisor_ID=h.ID '
-									. 'join WORKFLOWS w on aw.Workflow_ID=w.ID ';
+									. 'join WORKFLOWS w on aw.Workflow_ID=w.ID '
+									. 'join STATUS s on aw.Status_ID=s.ID ';
 						
 							foreach ($pdo->query($sql) as $row) {
 								echo '<tr>';
@@ -66,7 +69,7 @@ $(document).ready(function() {
 								echo '<td>'. $row['IP_Address'] . '</td>';		
 								echo '<td>'. $row['Mgmt_IP'] . '</td>';
 								echo '<td>'. $row['Name'] . '</td>';
-								echo '<td>'. $row['Active'] . '</td>';
+								echo '<td style=background-color:'. $row['HtmlColor'] . '>' . $row['Status'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	
 								echo '&nbsp;';

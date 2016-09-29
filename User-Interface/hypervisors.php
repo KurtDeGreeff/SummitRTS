@@ -61,12 +61,15 @@ $(document).ready(function() {
 										. 'h.Mgmt_IP, '
 										. 'h.Datacenter, '
 										. 'h.Datastore, '
-										. 'h.Active, '
+										. 'h.Status_ID, '
 										. 'h.Max_Concurrent_SUTS, '
 										. 'h.date_modified, '
-										. 'h.Hypervisor_Type_ID '
+										. 'h.Hypervisor_Type_ID, '
+										. 's.Status, '
+										. 's.HtmlColor '
 									. 'from HYPERVISORS h '
-									. 'join HYPERVISOR_TYPES ht on h.Hypervisor_Type_ID=ht.ID ';
+									. 'join HYPERVISOR_TYPES ht on h.Hypervisor_Type_ID=ht.ID '
+									. 'join STATUS s on h.Status_ID=s.ID';
 							
 							foreach ($pdo->query($sql) as $row) {
 								echo '<tr>';
@@ -79,7 +82,7 @@ $(document).ready(function() {
 								echo '<td>'. $row['Mgmt_IP'] . '</td>';
 								echo '<td>'. $row['Datacenter'] . '</td>';
 								echo '<td>'. $row['Datastore'] . '</td>';
-								echo '<td>'. $row['Active'] . '</td>';
+								echo '<td style=background-color:'. $row['HtmlColor'] . '>'. $row['Status'] . '</td>';
 								echo '<td>'. $row['Max_Concurrent_SUTS'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	

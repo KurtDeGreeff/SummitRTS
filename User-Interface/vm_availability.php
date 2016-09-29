@@ -36,7 +36,7 @@ $(document).ready(function() {
 							<th>ID</th>
 							<th>Hypervisor_IP</th>
 							<th>Ref_Name</th>
-							<th>Active</th>
+							<th>Status</th>
 							<th>Tools_Available</th>
 							<th>date_modified</th>
 							<th>Action</th>
@@ -49,21 +49,24 @@ $(document).ready(function() {
 							$sql = 'select hv.ID,' 
 										. 'hv.Hypervisor_ID,'
 										. 'hv.VM_Template_ID,'
-										. 'hv.Active,'
+										. 'hv.Status_ID,'
 										. 'hv.Tools_Available,'
 										. 'vt.Ref_Name, '
 										. 'h.IP_Address, '
+										. 's.Status, '
+										. 's.HtmlColor, '
 										. 'hv.date_modified '
 									. 'from HYPERVISOR_VMS hv '
 									. 'join HYPERVISORS h on hv.Hypervisor_ID=h.ID '
-									. 'join VM_TEMPLATES vt on hv.VM_Template_ID=vt.ID ';
+									. 'join VM_TEMPLATES vt on hv.VM_Template_ID=vt.ID '
+									. 'join status s on hv.Status_ID=s.ID ';
 							
 							foreach ($pdo->query($sql) as $row) {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['Ref_Name'] . '</td>';
 								echo '<td>'. $row['IP_Address'] . '</td>';
-								echo '<td>'. $row['Active'] . '</td>';
+								echo '<td style=background-color:'. $row['HtmlColor'] . '>'. $row['Status'] . '</td>';
 								echo '<td>'. $row['Tools_Available'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	

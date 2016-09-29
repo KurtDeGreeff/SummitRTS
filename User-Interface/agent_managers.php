@@ -61,7 +61,7 @@ $(document).ready(function() {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['IP_Address'] . '</td>';
-								echo '<td bgcolor='. $row['HtmlColor'] . '>' . $row['Status'] . '</td>';								
+								echo '<td style=background-color:'. $row['HtmlColor'] . '>' . $row['Status'] . '</td>';								
 								echo '<td>'. $row['Wait'] . '</td>';
 								echo '<td>'. $row['LogFile'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';

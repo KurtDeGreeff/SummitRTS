@@ -65,15 +65,13 @@
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['Name'] . '</td>';		
 								echo '<td>'. $row['SUT_NAME'] . '</td>';
-								echo '<td bgcolor='. $row['Status_Color'] .'>'. $row['Status'] . '</td>';
-								echo '<td bgcolor='. $row['Result_Color'] .'>'. $row['Result_Name'] . '</td>';
+								echo '<td style=background-color:'. $row['Status_Color'] . '>'. $row['Status'] . '</td>';
+								echo '<td style=background-color:'. $row['Result_Color'] . '>'. $row['Result_Name'] . '</td>';
 								echo '<td>'. $row['Order_Index'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	
 								echo '&nbsp;';
-							   	echo '<a class="btn btn-success" href="update.php?id='.$row['ID'].'">Update</a>';
-							   	echo '&nbsp;';
-							   	echo '<a class="btn btn-danger" href="delete.php?id='.$row['ID'].'">Delete</a>';
+							   	echo '<a class="btn btn-info" href="update.php?id='.$row['ID'].'">View Logs</a>';
 							   	echo '</td>';
 								echo '</tr>';
 							}
