@@ -85,7 +85,7 @@ if (!empty($_GET['sut_id'])) {
 										. "sut.Workflow_ID, "
 										. "sut.SUT_Type_ID, "
 										. "sut.IP_Address, "
-										. "sut.Log_File, "
+										. "sut.Log_File as Agent_Log, "
 										. "sut.Remote_Console_URL, "
 										. "sut.Console_Active, "
 										. "s.HtmlColor, "
@@ -126,7 +126,7 @@ if (!empty($_GET['sut_id'])) {
 								echo '<td>'. $row['AGM_IP'] . '</td>';
 								echo '<td>'. $row['Workflow_Name'] . '</td>';
 								echo '<td>'. $row['SUT_Type'] . '</td>';
-								echo '<td><form action="singlelog.php" method="get"><input type="hidden" name="Log_File_Path" value='.$row['Log_File'].'><input type="submit" class="btn btn-info" value="View Log"></form></td>';
+								echo '<td><form action="singleLogByName.php" method="get"><input type="hidden" name="Log_File" value='.$row['Agent_Log'].'><input type="submit" class="btn btn-info" value="View Log"></form></td>';
 								echo '<td>'. $row['IP_Address'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 								echo '<td width=250>';

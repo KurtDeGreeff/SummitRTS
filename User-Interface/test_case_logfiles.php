@@ -58,8 +58,7 @@
 								echo '<td>'. $row['Log_File_Name'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	
-								echo '&nbsp;';
-							   	echo '<a class="btn btn-info" href="update.php?id='.$row['ID'].'">View Log</a>';
+							   	echo '<form action="singlelog.php" method="get"><input type="hidden" name="Log_File_ID" value='.$row['ID'].'><input type="submit" class="btn btn-info" value="View Log"></form>';
 							   	echo '</td>';
 								echo '</tr>';
 							}

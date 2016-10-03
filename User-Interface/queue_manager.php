@@ -45,7 +45,7 @@ $(document).ready(function() {
 							$sql = 'select qm.ID, ' 
 										. 'qm.Status_ID, '
 										. 'qm.Wait, '
-										. 'qm.Log_File, '
+										. 'qm.Log_File as Qman_Log, '
 										. 'qm.date_modified, '
 										. 's.HtmlColor, '
 										. 's.Status '
@@ -57,7 +57,7 @@ $(document).ready(function() {
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['Wait'] . '</td>';
 								echo '<td style=background-color:'. $row['HtmlColor'] . '>'. $row['Status'] . '</td>';
-								echo '<td>'. $row['Log_File'] . '</td>';
+								echo '<td><form action="singleLogByName.php" method="get"><input type="hidden" name="Log_File" value='.$row['Qman_Log'].'><input type="submit" class="btn btn-info" value="View Log"></form></td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 								echo '<td width=250><a class="btn btn-info" href="UpdateQueueManager.php?id='.$row['ID'].'">UpdateMGR</a></td>';
 								echo '</tr>';

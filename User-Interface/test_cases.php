@@ -70,8 +70,7 @@
 								echo '<td>'. $row['Order_Index'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	
-								echo '&nbsp;';
-							   	echo '<a class="btn btn-info" href="update.php?id='.$row['ID'].'">View Logs</a>';
+							   	echo '<form action="singleTestCase.php" method="get"><input type="hidden" name="testcase_id" value='.$row['ID'].'><input type="submit" class="btn btn-info" value="View Logs"></form>';
 							   	echo '</td>';
 								echo '</tr>';
 							}
