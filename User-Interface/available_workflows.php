@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php
-require_once 'components/header.php';
+	require_once 'components/header.php';
 ?>
 <head>
     <meta charset="utf-8">
-<link href="css/styles.css" rel="stylesheet" />
-<link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" />
-<link href="https://cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
-
+	<link href="css/styles.css" rel="stylesheet" />
+	<link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="https://cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 </head>
 <script> 
 $(document).ready(function() {
@@ -35,7 +34,9 @@ $(document).ready(function() {
 							<tr>
 							<th>ID</th>
 							<th>Agent_MGR_IP</th>
+							<th>Hypervisor IP</th>
 							<th>Hypervisor_MGR</th>
+							<th>Hypervisor Desc.</th>
 							<th>Workflow_Name</th>
 							<th>Status</th>
 							<th>date_modified</th>
@@ -53,6 +54,8 @@ $(document).ready(function() {
 										. 'aw.Status_ID, '
 										. 'am.IP_Address, '
 										. 'h.Mgmt_IP, '
+										. 'h.IP_Address as hyp_IP, '
+										. 'h.description, '
 										. 'w.Name, '
 										. 'am.date_modified, '
 										. 's.Status, '
@@ -67,7 +70,9 @@ $(document).ready(function() {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['IP_Address'] . '</td>';		
+								echo '<td>'. $row['hyp_IP'] . '</td>';		
 								echo '<td>'. $row['Mgmt_IP'] . '</td>';
+								echo '<td>'. $row['description'] . '</td>';
 								echo '<td>'. $row['Name'] . '</td>';
 								echo '<td style=background-color:'. $row['HtmlColor'] . '>' . $row['Status'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
@@ -89,6 +94,6 @@ $(document).ready(function() {
 	</div> <!-- /container -->
 </body>
 <?php
-require_once 'components/footer.php';
+	require_once 'components/footer.php';
 ?>
 </html>
