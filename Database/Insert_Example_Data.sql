@@ -41,13 +41,16 @@ INSERT INTO AVAILABLE_SOFTWARE (ID, Software_ID, VM_Template_ID)
 VALUES ('1','1','1'),('2','1','2'),('3','2','3'),('4','2','3');
 
 INSERT INTO HYPERVISOR_TYPES(ID,Name)
-VALUES (1,'vSphere'),(2,'vmwks'),(3,'vBox');
+VALUES (1,'vSphere'),(2,'vmwks'),(3,'vBox'),(99,'Placeholder');
 
 INSERT INTO HYPERVISORS (ID, Hypervisor_Type_ID, IP_Address, Username, Password, Version, Mgmt_IP, Datacenter, Datastore, Max_Concurrent_SUTS, Status_ID)
 VALUES (1,1,'192.168.10.55','administrator@vcenter6u1.local','BelayTech2016!','6','192.168.10.105','Device','datastore11',1,12),
 (2,1, '192.168.10.54','root','BelayTech2016','5','192.168.10.86','Device','datastore-1',1,11),
 (3,2,'127.0.0.1','administrator','BelayTech2016','12.0','127.0.0.1','Device','C:\\temp\\WKS',1,11),
 (4,3,'127.0.0.2','administrator','BelayTech2016','5.0.14','127.0.0.2','Device','C:\\temp\\vbox',1,11);
+
+INSERT INTO HYPERVISORS (id,hypervisor_type_ID,username,password,version,datacenter,datastore,STATUS_ID,Max_Concurrent_SUTS,Description) 
+VALUES (99,99,'none','none','none','none','none',12,0,'Placeholder');
 
 INSERT INTO HYPERVISOR_VMS(ID, Hypervisor_ID, VM_Template_ID, Status_ID, Tools_Available)
 VALUES (1,1,1,11,1),(2,2,1,11,1),(3,3,1,11,1),(4,4,1,11,1),(5,1,2,12,1),(6,2,2,11,1),(7,3,2,11,1),(8,4,2,11,1),(9,1,3,12,1),(10,2,3,11,1),(11,3,3,12,1),(12,4,3,12,1),(13,1,4,12,0),(14,2,4,11,0),(15,3,4,12,0),(16,4,4,12,0);
@@ -57,7 +60,7 @@ VALUES (1,'TestCase_Default','c:\\SummitRTS\\TestCase_Default'),
 (2,'MultiMachine_Default','c:\\SummitRTS\\MultiMachine_Default');
 
 INSERT INTO AGENT_MANAGERS (ID, IP_Address, STATUS_ID, Wait, Logfile)
-VALUES (1, '127.0.0.1',1,60,'c:\\SummitRTS\\Agent_Manager\\Agent_Manager.log');
+VALUES (1, '127.0.0.1',1,60,'c:\\SummitRTS\\Agent_Manager\\Agent_Manager.log'),(99,'0.0.0.0',1,99,'none');
 
 INSERT INTO AVAILABLE_WORKFLOWS (ID, Agent_Mgr_ID, Hypervisor_ID, Workflow_ID, Status_ID)
 VALUES (1,1,1,1,11),(2,1,1,2,11),(3,1,2,1,11),(4,1,2,2,11),(5,1,3,1,11),(6,1,3,2,11),(7,1,4,1,11),(8,1,4,2,11);
