@@ -65,7 +65,7 @@ $SUTS = $xmldata.Device_TestPlan.sut
 $SUTCOUNT = $SUTS.count
 writeLog("TotalVMs: $SUTCOUNT")
 
-#Enter the Test into the Database with a Status of Submitted
+#Enter the Test into the Database with a Status of Submitted and Retrieve Test_ID
 writeLog("Entering TestName: $testname and TotalVMs: $SUTCOUNT into the Database")
 $query = "INSERT INTO test_suites (Name, Status_ID, Total_SUT) VALUES ('$testname','5',$SUTCOUNT)"
 $testSuiteID = @(RunSQLInsert $query)[1] #this will grab the test suite ID
@@ -103,7 +103,7 @@ foreach($SUT in $SUTS) {
     $WORKFLOW_Data = @(RunSQLCommand $query)
     $Workflow_ID = $WORKFLOW_Data.ID
 
-    # Enter base SUT into DB
+    # Enter base SUT into DB and retrieve SUT_ID
     $query = "INSERT INTO SUTs (Name,Status_ID,Test_Suite_ID,VM_Template_ID,Hypervisor_Type_ID,Workflow_ID,SUT_Type_ID,Console_Active,Hypervisor_ID,Agent_Manager_ID,Log_File,IP_Address,Remote_Console_URL) Values('$uniqueSUTName','5','$testSuiteID','$VM_Template_ID','$Hypervisor_Type_ID','$Workflow_ID','$SUT_Type_ID','0',99,99,'none_yet','none_yet','none_yet')"
     $SUTInsertID = @(RunSQLInsert $query)[1]
     writeLog("SUT_ID is: $SUTInsertID")
