@@ -1,0 +1,38 @@
+<Device_TestPlan>
+	<SUT ID="1">
+		<name>SUT01</name>
+		<configure_SUT>
+			<template>
+			<easy_name>CentOS_6_test_vm</easy_name>
+			</template>
+		</configure_SUT>
+		<provision_SUT>
+			<provision_Script>
+				<name>provisionVM.sh</name>
+			</provision_Script>
+			<software>
+				<application ID="1">
+					<name>apache</name>
+					<version>latest</version>
+				</application>
+			</software>
+		</provision_SUT>
+		<testcases>
+			<testcase ID="1">
+				<name>TestCase01</name>
+				<testcase_script ID="1">
+					<name>testcase01.sh</name>
+				</testcase_script>
+			</testcase>
+			<testcase ID="2">
+				<name>TestCase02</name>
+				<testcase_script ID="1">
+					<name>testcase02.sh</name>
+				</testcase_script>
+			</testcase>
+		</testcases>
+		<destroy_SUT>
+			<property>true</property>
+		</destroy_SUT>
+	</SUT>
+</Device_TestPlan>

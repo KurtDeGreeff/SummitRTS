@@ -1,0 +1,38 @@
+<Device_TestPlan>
+	<SUT ID="1">
+		<name>SUT01</name>
+		<configure_SUT>
+			<template>
+			<easy_name>Android_4_test_vm</easy_name>
+			</template>
+		</configure_SUT>
+		<provision_SUT>
+			<provision_Script>
+				<name>provisionVM.ps1</name>
+			</provision_Script>
+			<software>
+				<application ID="1">
+					<name>chrome</name>
+					<version>27.0.1</version>
+				</application>
+			</software>
+		</provision_SUT>
+		<testcases>
+			<testcase ID="1">
+				<name>TestCase01</name>
+				<testcase_script ID="1">
+					<name>TestCase01.ps1</name>
+				</testcase_script>
+			</testcase>
+			<testcase ID="2">
+				<name>TestCase02</name>
+				<testcase_script ID="1">
+					<name>TestCase02.ps1</name>
+				</testcase_script>
+			</testcase>
+		</testcases>
+		<destroy_SUT>
+			<property>true</property>
+		</destroy_SUT>
+	</SUT>
+</Device_TestPlan>
