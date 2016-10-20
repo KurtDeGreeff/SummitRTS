@@ -23,15 +23,25 @@
 		<testcases>
 			<testcase ID="1">
 				<name>TestCase01</name>
-				<testcase_script ID="1">
-					<name>TestCase01.bat</name>
-				</testcase_script>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase01.bat</name>
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase01.bat</name>
+					</testcase_script>
+				</testcase_scripts>
 			</testcase>
 			<testcase ID="2">
 				<name>TestCase02</name>
-				<testcase_script ID="1">
-					<name>TestCase02.bat</name>
-				</testcase_script>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase02.bat</name>
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase02.bat</name>
+					</testcase_script>
+				</testcase_scripts>
 			</testcase>
 		</testcases>
 		<destroy_SUT>
@@ -62,15 +72,25 @@
 		<testcases>
 			<testcase ID="1">
 				<name>TestCase01</name>
-				<testcase_script ID="1">
-					<name>TestCase01.bat</name>
-				</testcase_script>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase01.bat</name>
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase01.bat</name>
+					</testcase_script>
+				</testcase_scripts>
 			</testcase>
 			<testcase ID="2">
 				<name>TestCase02</name>
-				<testcase_script ID="1">
-					<name>TestCase02.bat</name>
-				</testcase_script>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase02.bat</name>
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase02.bat</name>
+					</testcase_script>
+				</testcase_scripts>
 			</testcase>
 		</testcases>
 		<destroy_SUT>
