@@ -80,7 +80,7 @@ if (!empty($_GET['sut_id'])) {
 							<?php 
 							//include 'components/database.php';
 							$pdo = Database::connect();
-							$sql = "select tc.ID, "
+							$sql = "select DISTINCT tc.ID, "
 										. "tc.Name, "
 										. "tc.Order_Index, "
 										. "tc.SUT_ID, "
