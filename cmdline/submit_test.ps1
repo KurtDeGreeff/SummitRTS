@@ -9,9 +9,9 @@
 Param(
     [Parameter(Mandatory=$True)]
       [string]$testname,
-    [Parameter(Mandatory=$False)][AllowNull]
+    [Parameter(Mandatory=$False)]
       [string]$xmlDocument,
-    [Parameter(Mandatory=$False)][AllowNull]
+    [Parameter(Mandatory=$False)]
       [string]$targetServer
 )
 
@@ -33,7 +33,6 @@ $DefaulttargetServer = "localhost"
 $DefaulXMLDocument = "$SCRIPTDIR\exampleXML.xml"
 #Create index counters
 $vmCount = 1000
-$testCaseOrder = 0
 
 # Set defaults if params are blank
 if ($xmlDocument -eq $null){
@@ -74,6 +73,9 @@ writeLog("TestSuite ID is : $testSuiteID")
 #Insert data for each SUT 
 foreach($SUT in $SUTS) {
     #SUT info
+    # Reset the TestCase count for each SUT
+    $testCaseOrder = 0
+    #Step up the SUT index
     $vmCount++
     writeLog("SUT Index - $vmcount")
     $CurrentSUT = $SUT.name
@@ -102,18 +104,67 @@ foreach($SUT in $SUTS) {
     $query = "select ID, Name from WORKFLOWS where Name like '$SUT_Workflow_Type'"
     $WORKFLOW_Data = @(RunSQLCommand $query)
     $Workflow_ID = $WORKFLOW_Data.ID
-
+    ############################################
     # Enter base SUT into DB and retrieve SUT_ID
-    $query = "INSERT INTO SUTs (Name,Status_ID,Test_Suite_ID,VM_Template_ID,Hypervisor_Type_ID,Workflow_ID,SUT_Type_ID,Console_Active,Hypervisor_ID,Agent_Manager_ID,Log_File,IP_Address,Remote_Console_URL) Values('$uniqueSUTName','5','$testSuiteID','$VM_Template_ID','$Hypervisor_Type_ID','$Workflow_ID','$SUT_Type_ID','0',99,99,'none_yet','none_yet','none_yet')"
-    $SUTInsertID = @(RunSQLInsert $query)[1]
-    writeLog("SUT_ID is: $SUTInsertID")
-
+    ############################################
+      $query = "INSERT INTO SUTs (Name,Status_ID,Test_Suite_ID,VM_Template_ID,Hypervisor_Type_ID,Workflow_ID,SUT_Type_ID,Console_Active,Hypervisor_ID,Agent_Manager_ID,Log_File,IP_Address,Remote_Console_URL) Values('$uniqueSUTName','5','$testSuiteID','$VM_Template_ID','$Hypervisor_Type_ID',  '$Workflow_ID','$SUT_Type_ID','0',99,99,'none_yet','none_yet','none_yet')"
+      $SUTInsertID = @(RunSQLInsert $query)[1]
+      writeLog("SUT_ID is: $SUTInsertID")
+    ############################################
+    # provision_SUT
+    ############################################
+      $testCaseOrder++
+      $query = "INSERT INTO TEST_CASES (Name, SUT_ID, Status_ID, Result_ID, Order_Index) VALUES ('provision_SUT', $SUTInsertID, 5, 6, $testCaseOrder)"
+      $testCaseID = @(RunSQLInsert $query)[1]
+      # Insert Script details for provisioning
+      $query = "INSERT INTO TEST_CASE_SCRIPTS (Script_Path, Test_Case_ID, Order_Index) VALUES ('no-script', $testCaseID, 1)"
+	    RunSQLCommand $query
+    ############################################
+    # Configure_SUT
+    ############################################
+      $testCaseOrder++
+      $query = "INSERT INTO TEST_CASES (name, sut_id, status_id, Result_ID, order_index) VALUES ('configure_SUT', $SUTInsertID, 5, 6, $testCaseOrder)"
+      $testCaseID = @(RunSQLInsert $query)[1]
+      # Insert Script details for Configure_SUT
+      $Configure_Script = $sut.configure_SUT.configure_Script.name
+      $query = "INSERT INTO TEST_CASE_SCRIPTS (script_path, test_case_id, order_index) VALUES ('$Configure_Script', $testCaseID, 1)"
+	    RunSQLCommand $query      
+      #Future Software Processing
+    ############################################
     #Testcases
-    #testcase scripts
-
-
-
-
+    ############################################
+      $testcases = $SUT.testcases.testcase
+	    foreach($testcase in $testcases) {
+          # reset the Testcase_script count for each Testcase
+          $testCaseScriptOrder = 0
+          $testCaseName = $testcase.name
+		      writeLog("Entering Testcase: $testCaseName into the Database")
+          $testCaseOrder++
+		      # Insert Testcase data into DB
+          $query = "INSERT INTO TEST_CASES (name, sut_id, status_id, Result_ID, order_index) VALUES ('$testCaseName', $SUTInsertID, 5, 6, $testCaseOrder)"
+		      $testCaseID = @(RunSQLInsert $query)[1]
+          $testCaseScripts = $testcase.testcase_scripts.testcase_script
+          foreach ($testCaseScript in $testCaseScripts ) {
+              $testCaseScriptName = $testCaseScript.name
+              writeLog("Entering TestcaseScript: $testCaseScriptName into the Database")
+              $testCaseScriptOrder++
+              # Insert Testcase Script Data into DB.
+		          $query = "INSERT INTO TEST_CASE_SCRIPTS (script_path, test_case_id, order_index) VALUES ('$testCaseScriptName', '$testCaseID', '$testCaseScriptOrder')"
+		          RunSQLCommand $query
+          }
+	    }
+    ############################################
+    # Destroy SUT Logic
+    ############################################
+      $testCaseOrder++
+      $destroyValue = $sut.destroy_SUT.property
+      if ($destroyValue -eq "true"){
+          $query = "INSERT INTO TEST_CASES (name, sut_id, status_id, Result_ID, order_index) VALUES ('Destroy_SUT', $SUTInsertID, 5, 6, $testCaseOrder)"
+          $testCaseID = @(RunSQLInsert $query)[1]
+          # Insert Script details for Destroy_SUT
+          $query = "INSERT INTO TEST_CASE_SCRIPTS (script_path, test_case_id, order_index) VALUES ('no-script', $testCaseID, 1)"
+	        RunSQLCommand $query
+      }
 }
 
 # Mark the test as Queued, while leaving the SUT's as submitted. To ensure the Queue Manager 
