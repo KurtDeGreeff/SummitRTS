@@ -69,7 +69,6 @@ if (!empty($_GET['sut_id'])) {
 							<th>ID</th>
 							<th>Name</th>
 							<th>Order_Index</th>
-							<th>Script_Path</th>
 							<th>Status</th>
 							<th>Result</th>
 							<th>date_modified</th>
@@ -88,7 +87,6 @@ if (!empty($_GET['sut_id'])) {
 										. "tc.Result_ID, "
 										. "tc.date_modified, "
 										. "tcs.Test_Case_ID, "
-										. "tcs.Script_Path, "
 										. "s.Status, "
 										. "s.HtmlColor as Status_Color, "
 										. "tr.Name as Result_Name, "
@@ -105,12 +103,11 @@ if (!empty($_GET['sut_id'])) {
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['Name'] . '</td>';		
 								echo '<td>'. $row['Order_Index'] . '</td>';
-								echo '<td>'. $row['Script_Path'] . '</td>';
 								echo '<td style=background-color:'. $row['Status_Color'] . '>'. $row['Status'] . '</td>';
 								echo '<td style=background-color:'. $row['Result_Color'] . '>'. $row['Result_Name'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	
-							   	echo '<form action="singleTestCase.php" method="get"><input type="hidden" name="testcase_id" value='.$row['ID'].'><input type="submit" class="btn btn-info" value="View Logs"></form>';
+							   	echo '<form action="singleTestCase.php" method="get"><input type="hidden" name="testcase_id" value='.$row['ID'].'><input type="submit" class="btn btn-info" value="View TestCase"></form>';
 							   	echo '</td>';
 								echo '</tr>';
 							}
