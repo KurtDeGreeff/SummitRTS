@@ -14,8 +14,6 @@ if (!empty($_GET['testcase_id'])) {
 			. "tc.Result_ID, "
 			. "sut.Name as SUT_Name, "
 			. "sut.Log_File as Agent_Log, "
-			. "tcs.Test_Case_ID, "
-			. "tcs.Script_Path, "
 			. "s.Status, "
 			. "s.HtmlColor as Status_Color, "
 			. "tr.Name as Result_Name, "
@@ -23,7 +21,6 @@ if (!empty($_GET['testcase_id'])) {
 			. "from TEST_CASES tc "
 			. "join SUTs sut on tc.SUT_ID=sut.ID "
 			. "join Status s on tc.Status_ID=s.ID "
-			. "join TEST_CASE_SCRIPTS tcs on tc.ID=tcs.Test_Case_ID "
 			. "join TEST_RESULT tr on tc.Result_ID=tr.ID "
 			. "where tc.ID = $testcase_id";
 	$pdo = Database::connect();
@@ -35,7 +32,6 @@ if (!empty($_GET['testcase_id'])) {
 		''. $row['Result_Name'] .'';
 		''. $row['Result_Color'] .'';
 		''. $row['Agent_Log'] .'';
-		''. $row['Script_Path'] .'';
 	}
 } 
 
@@ -71,20 +67,41 @@ if (!empty($_GET['testcase_id'])) {
 			<tr>
 			<th>SUT Name</th>
 			<th>TestCase Name</th>
-			<th>Script_Path</th>
 			<th>Status</th>
 			<th>Result</th>
 			<th>Logfile</th>
 			</tr>
 			<tr>
 			<?php
-			echo '<td>'. $row['SUT_Name'] .'</td>';
-			echo '<td>'. $row['Name'] .'</td>';
-			echo '<td>'. $row['Script_Path'] .'</td>';
-			echo '<td style=background-color:'. $row['Status_Color'] . '>'. $row['Status'] . '</td>';
-			echo '<td style=background-color:'. $row['Result_Color'] . '>'. $row['Result_Name'] . '</td>';
-			echo '<td><form action="singleLogByName.php" method="get"><input type="hidden" name="Log_File" value='.$row['Agent_Log'].'><input type="submit" class="btn btn-info" value="View Log"></form></td>';
-			echo '</tr>';
+				echo '<td>'. $row['SUT_Name'] .'</td>';
+				echo '<td>'. $row['Name'] .'</td>';
+				echo '<td style=background-color:'. $row['Status_Color'] . '>'. $row['Status'] . '</td>';
+				echo '<td style=background-color:'. $row['Result_Color'] . '>'. $row['Result_Name'] . '</td>';
+				echo '<td><form action="singleLogByName.php" method="get"><input type="hidden" name="Log_File" value='.$row['Agent_Log'].'><input type="submit" class="btn btn-info" value="View Log"></form></td>';
+				echo '</tr>';
+			?>
+		</table>
+		<table class="table table-striped table-bordered">
+			<tr>
+			<th>TestCase Scripts</th>
+			</tr>
+			<?php
+			if (!empty($_GET['testcase_id'])) {
+				//Grab the test name from the test id in the db for display.
+				$sql = "select tc.ID, "
+				. "tcs.Test_Case_ID, "
+				. "tcs.Script_Path "
+				. "from TEST_CASES tc "
+				. "join TEST_CASE_SCRIPTS tcs on tc.ID=tcs.Test_Case_ID "
+				. "where tc.ID = $testcase_id";
+			
+				$pdo = Database::connect();
+				foreach ($pdo->query($sql) as $row) {
+					echo '<tr>';
+					echo '<td>'. $row['Script_Path'] .'</td>';
+					echo '</tr>';
+				}
+			} 
 			?>
 		</table>
 					<table id="example" class="table table-striped table-bordered">
