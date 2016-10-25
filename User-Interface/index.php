@@ -75,13 +75,13 @@ if (!empty($_GET['test_id'])) {
 								echo '<td>'. $row['Total_SUT'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 								echo '<td width=250>';
-								echo '<form action="singletest.php" method="get"><input type="hidden" name="test_id" value='.$row['ID'].'><input type="submit" class="btn btn-info" value="View Test"></form>';
+								echo '<form action="singletest.php" method="get" style="display:inline-block"><input type="hidden" name="test_id" value='.$row['ID'].'><input type="submit" class="btn btn-info" value="View Test"></form>&nbsp;';
 								if ($row['statusID'] == 9){
 									echo '';
 								} elseif ($row['statusID'] == 10){
 									echo '';
 								} else {
-									echo '<form action="index.php" method="get"><input type="hidden" name="test_id" value='.$row['ID'].'><input type="submit" class="btn btn-danger" value="Abort Test"></form>';
+									echo '<form action="index.php" method="get" style="display:inline-block"><input type="hidden" name="test_id" value='.$row['ID'].'><input type="submit" class="btn btn-danger" value="Abort Test"></form>';
 								}
 								echo '</td>';
 								echo '</tr>';

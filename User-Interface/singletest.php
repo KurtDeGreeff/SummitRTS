@@ -129,15 +129,14 @@ if (!empty($_GET['sut_id'])) {
 								echo '<td><form action="singleLogByName.php" method="get"><input type="hidden" name="Log_File" value='.$row['Agent_Log'].'><input type="submit" class="btn btn-info" value="View Log"></form></td>';
 								echo '<td>'. $row['IP_Address'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
-								echo '<td width=250>';
-								echo '<form action="singleSUT.php" method="get"><input type="hidden" name="sut_id" value='. $row['ID'] .'><input type="submit" class="btn btn-info" value="View SUT"></form>';
-								echo '&nbsp';
+								echo '<td>';
+								echo '<form action="singleSUT.php" method="get" style="display:inline-block"><input type="hidden" name="sut_id" value='. $row['ID'] .'><input type="submit" class="btn btn-info" value="View SUT"></form>&nbsp;';
 								if ($row['StatusID'] == 9){
 									echo '';
 								} elseif ($row['StatusID'] == 10){
 									echo '';
 								} else {
-									echo "<form action='singletest.php' method='get'><input type='hidden' name='test_id' value='$ViewTestId'><input type='hidden' name='sut_id' value=".$row['ID']."><input type='submit' class='btn btn-danger' value='Abort SUT'></form>";
+									echo "<form action='singletest.php' method='get' style='display:inline-block'><input type='hidden' name='test_id' value='$ViewTestId'><input type='hidden' name='sut_id' value=".$row['ID']."><input type='submit' class='btn btn-danger' value='Abort SUT'></form>";
 								}
 								echo '</td>';
 								echo '</tr>';
