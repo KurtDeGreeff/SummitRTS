@@ -31,7 +31,7 @@ $LogFile = "c:\SummitRTS\submitTest\submitTest.log"
 # defaults
 $DefaulttargetServer = "localhost"
 $DefaulXMLDocument = "$SCRIPTDIR\exampleXML.xml"
-#Create index counters
+# Create index counters
 $vmCount = 1000
 
 # Set defaults if params are blank
@@ -46,7 +46,7 @@ if ($targetServer -eq $null){
 	$targetServer = $DefaulttargetServer
 }
 
-#Determine if testname is a duplicate
+# Determine if testname is a duplicate
 writeLog("Querying the Database for Duplicate TestNames")
 $query = "select * from test_suites where name = '$testname'"
 $TestNameData = @(RunSQLCommand $query)
@@ -56,15 +56,15 @@ if($TestNameData -ne 0){
 	BREAK
 }
 
-#Import XML
+# Import XML
 writeLog("Importing the XML Document '$xmlDocument' to begin parsing")
 [xml]$xmlData = get-content "$xmlDocument"
-$SUTS = $xmldata.Device_TestPlan.sut
-#Get the total number of SUT's (added to the DB later)
+$SUTS = $xmldata.TestPlan.sut
+# Get the total number of SUT's (added to the DB later)
 $SUTCOUNT = $SUTS.count
 writeLog("TotalVMs: $SUTCOUNT")
 
-#Enter the Test into the Database with a Status of Submitted and Retrieve Test_ID
+# Enter the Test into the Database with a Status of Submitted and Retrieve Test_ID
 writeLog("Entering TestName: $testname and TotalVMs: $SUTCOUNT into the Database")
 $query = "INSERT INTO test_suites (Name, Status_ID, Total_SUT) VALUES ('$testname','5',$SUTCOUNT)"
 $testSuiteID = @(RunSQLInsert $query)[1] #this will grab the test suite ID
@@ -72,10 +72,10 @@ writeLog("TestSuite ID is : $testSuiteID")
 
 #Insert data for each SUT 
 foreach($SUT in $SUTS) {
-    #SUT info
+    # SUT info
     # Reset the TestCase count for each SUT
     $testCaseOrder = 0
-    #Step up the SUT index
+    # Step up the SUT index
     $vmCount++
     writeLog("SUT Index - $vmcount")
     $CurrentSUT = $SUT.name
@@ -117,8 +117,9 @@ foreach($SUT in $SUTS) {
       $query = "INSERT INTO TEST_CASES (Name, SUT_ID, Status_ID, Result_ID, Order_Index) VALUES ('provision_SUT', $SUTInsertID, 5, 6, $testCaseOrder)"
       $testCaseID = @(RunSQLInsert $query)[1]
       # Insert Script details for provisioning
+	  writeLog("Insert Provisioning Details into DB.")
       $query = "INSERT INTO TEST_CASE_SCRIPTS (Script_Path, Test_Case_ID, Order_Index) VALUES ('no-script', $testCaseID, 1)"
-	    RunSQLCommand $query
+	  RunSQLCommand $query
     ############################################
     # Configure_SUT
     ############################################
@@ -126,12 +127,13 @@ foreach($SUT in $SUTS) {
       $query = "INSERT INTO TEST_CASES (name, sut_id, status_id, Result_ID, order_index) VALUES ('configure_SUT', $SUTInsertID, 5, 6, $testCaseOrder)"
       $testCaseID = @(RunSQLInsert $query)[1]
       # Insert Script details for Configure_SUT
-      $Configure_Script = $sut.configure_SUT.configure_Script.name
+      writeLog("Inserting SUT Configuration Details into DB.")
+	  $Configure_Script = $sut.configure_SUT.configure_Script.name
       $query = "INSERT INTO TEST_CASE_SCRIPTS (script_path, test_case_id, order_index) VALUES ('$Configure_Script', $testCaseID, 1)"
-	    RunSQLCommand $query      
+	  RunSQLCommand $query      
       #Future Software Processing
     ############################################
-    #Testcases
+    # Testcases
     ############################################
       $testcases = $SUT.testcases.testcase
 	    foreach($testcase in $testcases) {
@@ -158,12 +160,23 @@ foreach($SUT in $SUTS) {
     ############################################
       $testCaseOrder++
       $destroyValue = $sut.destroy_SUT.property
-      if ($destroyValue -eq "true"){
+	  $destroyScript = $sut.destroy_SUT.destroy_Script.name
+	  if (!($destroyScript -eq $null)) {
+		  writeLog("Inserting Destroy_Script into DB.")
+          $query = "INSERT INTO TEST_CASES (name, sut_id, status_id, Result_ID, order_index) VALUES ('Destroy_Script', $SUTInsertID, 5, 6, $testCaseOrder)"
+          $testCaseID = @(RunSQLInsert $query)[1]
+          # Insert Script details for Destroy_SUT
+          $query = "INSERT INTO TEST_CASE_SCRIPTS (script_path, test_case_id, order_index) VALUES ('$destroyScript', $testCaseID, 1)"
+	      RunSQLCommand $query		  
+		  $testCaseOrder++
+	  }	  
+	  if ($destroyValue -eq "true"){
+		  writeLog("Inserting Destroy SUT testcase into DB.")
           $query = "INSERT INTO TEST_CASES (name, sut_id, status_id, Result_ID, order_index) VALUES ('Destroy_SUT', $SUTInsertID, 5, 6, $testCaseOrder)"
           $testCaseID = @(RunSQLInsert $query)[1]
           # Insert Script details for Destroy_SUT
           $query = "INSERT INTO TEST_CASE_SCRIPTS (script_path, test_case_id, order_index) VALUES ('no-script', $testCaseID, 1)"
-	        RunSQLCommand $query
+	      RunSQLCommand $query
       }
 }
 

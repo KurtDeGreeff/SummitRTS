@@ -1,74 +1,89 @@
-<Device_TestPlan>
+<TestPlan>
 	<SUT ID="1">
 		<name>SUT01</name>
-		<configure_SUT>
-			<template>
-			<easy_name>Win_7_test_vm</easy_name>
-			</template>
-		</configure_SUT>
+		<type>Persistent</type>
+		<Hypervisor_type>vSphere</Hypervisor_type>
+		<Workflow>MultiMachine_Default</Workflow>
 		<provision_SUT>
-			<provision_Script>
-				<name>provisionVM.bat</name>
-			</provision_Script>
+			<template>
+				<easy_name>CentOS_6_test_vm</easy_name>
+			</template>
+		</provision_SUT>
+		<configure_SUT>
+			<configure_Script>
+				<name>provisionVM.sh</name>
+			</configure_Script>
 			<software>
 				<application ID="1">
-					<name>chrome</name>
-					<version>27.0.1</version>
+					<name>apache</name>
+					<version>latest</version>
 				</application>
 			</software>
-		</provision_SUT>
+		</configure_SUT>
 		<testcases>
 			<testcase ID="1">
-				<name>TestCase01</name>
-				<testcase_script ID="1">
-					<name>TestCase01.bat</name>
-				</testcase_script>
-			</testcase>
-			<testcase ID="2">
-				<name>TestCase02</name>
-				<testcase_script ID="1">
-					<name>TestCase02.bat</name>
-				</testcase_script>
+				<name>WaitForTransientSUTs</name>
+					<testcase_scripts>
+						<testcase_script ID="1">
+							<name>no-script</name>
+						</testcase_script>
+					</testcase_scripts>
 			</testcase>
 		</testcases>
 		<destroy_SUT>
+			<destroy_Script>
+				<name>CollectData.sh</name>
+			</destroy_Script>
 			<property>true</property>
 		</destroy_SUT>
 	</SUT>
 	<SUT ID="2">
 		<name>SUT02</name>
-		<configure_SUT>
-			<template>
-			<easy_name>Win_7_test_vm</easy_name>
-			</template>
-		</configure_SUT>
+		<type>Transient</type>
+		<Hypervisor_type>vSphere</Hypervisor_type>
+		<Workflow>TestCase_Default</Workflow>
 		<provision_SUT>
-			<provision_Script>
+			<template>
+				<easy_name>Win_7_test_vm</easy_name>
+			</template>
+		</provision_SUT>
+		<configure_SUT>
+			<configure_Script>
 				<name>provisionVM.bat</name>
-			</provision_Script>
+			</configure_Script>
 			<software>
 				<application ID="1">
 					<name>chrome</name>
 					<version>27.0.1</version>
 				</application>
 			</software>
-		</provision_SUT>
+		</configure_SUT>
 		<testcases>
 			<testcase ID="1">
 				<name>TestCase01</name>
-				<testcase_script ID="1">
-					<name>TestCase01.bat</name>
-				</testcase_script>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase01.bat</name><!-- Ping Test -->
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase01.bat</name><!-- Browse Test -->
+					</testcase_script>
+				</testcase_scripts>
 			</testcase>
 			<testcase ID="2">
 				<name>TestCase02</name>
-				<testcase_script ID="1">
-					<name>TestCase02.bat</name>
-				</testcase_script>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase02.bat</name><!-- Ping Test -->
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase02.bat</name><!-- Browse Test -->
+					</testcase_script>
+				</testcase_scripts>
 			</testcase>
 		</testcases>
 		<destroy_SUT>
 			<property>true</property>
 		</destroy_SUT>
 	</SUT>
-</Device_TestPlan>
+</TestPlan>

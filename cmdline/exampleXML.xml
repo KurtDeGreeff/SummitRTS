@@ -1,4 +1,4 @@
-<Device_TestPlan>
+<TestPlan>
 	<SUT ID="1">
 		<name>SUT01</name>
 		<type>Transient</type>
@@ -97,4 +97,4 @@
 			<property>true</property>
 		</destroy_SUT>
 	</SUT>
-</Device_TestPlan>
+</TestPlan>

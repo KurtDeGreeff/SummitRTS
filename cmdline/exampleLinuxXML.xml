@@ -1,38 +1,88 @@
-<Device_TestPlan>
+<TestPlan>
 	<SUT ID="1">
 		<name>SUT01</name>
-		<configure_SUT>
-			<template>
-			<easy_name>CentOS_6_test_vm</easy_name>
-			</template>
-		</configure_SUT>
+		<type>Transient</type>
+		<Hypervisor_type>vSphere</Hypervisor_type>
+		<Workflow>TestCase_Default</Workflow>
 		<provision_SUT>
-			<provision_Script>
+			<template>
+				<easy_name>CentOS_6_test_vm</easy_name>
+			</template>
+		</provision_SUT>
+		<configure_SUT>
+			<configure_Script>
 				<name>provisionVM.sh</name>
-			</provision_Script>
+			</configure_Script>
 			<software>
 				<application ID="1">
 					<name>apache</name>
 					<version>latest</version>
 				</application>
 			</software>
-		</provision_SUT>
+		</configure_SUT>
 		<testcases>
 			<testcase ID="1">
 				<name>TestCase01</name>
-				<testcase_script ID="1">
-					<name>testcase01.sh</name>
-				</testcase_script>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase01.sh</name>
+					</testcase_script>
+				</testcase_scripts>
 			</testcase>
 			<testcase ID="2">
 				<name>TestCase02</name>
-				<testcase_script ID="1">
-					<name>testcase02.sh</name>
-				</testcase_script>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase02.sh</name>
+					</testcase_script>
+				</testcase_scripts>
 			</testcase>
 		</testcases>
 		<destroy_SUT>
 			<property>true</property>
 		</destroy_SUT>
 	</SUT>
-</Device_TestPlan>
+	<SUT ID="2">
+		<name>SUT02</name>
+		<type>Transient</type>
+		<Hypervisor_type>vSphere</Hypervisor_type>
+		<Workflow>TestCase_Default</Workflow>
+		<provision_SUT>
+			<template>
+				<easy_name>CentOS_6_test_vm</easy_name>
+			</template>
+		</provision_SUT>
+		<configure_SUT>
+			<configure_Script>
+				<name>provisionVM.sh</name>
+			</configure_Script>
+			<software>
+				<application ID="1">
+					<name>apache</name>
+					<version>latest</version>
+				</application>
+			</software>
+		</configure_SUT>
+		<testcases>
+			<testcase ID="1">
+				<name>TestCase01</name>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase01.sh</name>
+					</testcase_script>
+				</testcase_scripts>
+			</testcase>
+			<testcase ID="2">
+				<name>TestCase02</name>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase02.sh</name>
+					</testcase_script>
+				</testcase_scripts>
+			</testcase>
+		</testcases>
+		<destroy_SUT>
+			<property>true</property>
+		</destroy_SUT>
+	</SUT>
+</TestPlan>
