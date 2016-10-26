@@ -14,13 +14,12 @@ Param(
     [Parameter(Mandatory=$False)]
       [string]$targetServer
 )
-
+#=======================================================================================
 set-ExecutionPolicy Bypass -Force #wonder if this should be moved to a deployment script.
 
 # Set the Working directory.
 $MYINV = $MyInvocation
 $SCRIPTDIR = split-path $MYINV.MyCommand.Path
-write-host $SCRIPTDIR
 
 # import logging, connection details, and mysql cmdlets.
 . "$SCRIPTDIR\..\utilities\general-cmdlets.ps1"
@@ -34,6 +33,8 @@ $DefaulXMLDocument = "$SCRIPTDIR\exampleXML.xml"
 # Create index counters
 $vmCount = 1000
 
+#=======================================================================================
+
 # Set defaults if params are blank
 if ($xmlDocument -eq $null){
 	writeLog("No xml Document was provided")
@@ -45,7 +46,7 @@ if ($targetServer -eq $null){
 	writeLog("Using Default targetServer, '$DefaulttargetServer'")
 	$targetServer = $DefaulttargetServer
 }
-
+#=======================================================================================
 # Determine if testname is a duplicate
 writeLog("Querying the Database for Duplicate TestNames")
 $query = "select * from test_suites where name = '$testname'"
@@ -55,7 +56,7 @@ if($TestNameData -ne 0){
 	writeLog("Please submit a Unique TestName")
 	BREAK
 }
-
+#=======================================================================================
 # Import XML
 writeLog("Importing the XML Document '$xmlDocument' to begin parsing")
 [xml]$xmlData = get-content "$xmlDocument"
@@ -69,7 +70,7 @@ writeLog("Entering TestName: $testname and TotalVMs: $SUTCOUNT into the Database
 $query = "INSERT INTO test_suites (Name, Status_ID, Total_SUT) VALUES ('$testname','5',$SUTCOUNT)"
 $testSuiteID = @(RunSQLInsert $query)[1] #this will grab the test suite ID
 writeLog("TestSuite ID is : $testSuiteID")
-
+#=======================================================================================
 #Insert data for each SUT 
 foreach($SUT in $SUTS) {
     # SUT info
