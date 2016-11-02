@@ -16,6 +16,8 @@ $SCRIPTDIR = split-path $MYINV.MyCommand.Path
 . "$SCRIPTDIR\..\utilities\connection_details.ps1"
 . "$SCRIPTDIR\..\utilities\mysql_cmdlets.ps1"
 . "$SCRIPTDIR\manager-cmdlets.ps1"
+# Set Shell Title
+$host.ui.RawUI.WindowTitle = "SummitRTS Queue Manager"
 #=======================================================================================
 # Script Arguments
 #=======================================================================================
@@ -99,9 +101,16 @@ do {
 		# wait 10 seconds
 		writeLog ("Pausing 10 seconds")
 		pause 10
-		# Insert Logic for Reviewing SUBMITTED SUT's
-		# This will Mark SUTs to queued from SUBMITTED and keep in mind Multi Machine tests (Persistent SUT's)
-
+		# Review Running Test Suites
+		ReviewRunningTests
+		# wait 5 seconds
+		writeLog ("Pausing 5 seconds")
+		# Review Queued Test Suites
+		ReviewQueuedTest
+		# wait 5 seconds
+		writeLog ("Pausing 5 seconds")
+		# Review Queued SUTs
+		AssignQueuedSUTs		
 		# wait 10 seconds
 		writeLog ("Pausing 10 seconds")
 		pause 10

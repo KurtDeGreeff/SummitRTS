@@ -122,6 +122,117 @@ function FinishCompletedTests {
 	}
 }
 #=======================================================================================
+function ReviewRunningTests(){
+	writeLog("Reviewing Running tests for Non-Queued SUTs")
+	# Query DB for all running test ID's
+	$query = "select id from test_suites where Status_ID = 8"
+	$RunningTestsData = @(RunSQLCommand $query)
+	if ($RunningTestsData.Count -ne 0) {
+		foreach ($RunningTest in $RunningTestsData){
+			$RunningTestSuiteID = $RunningTest.id 
+			# Determine if the test has a Persistent SUT
+			$query = "select ID,Status_ID,SUT_Type_ID from suts where SUT_Type_ID = 2 and Test_Suite_ID = $RunningTestSuiteID"
+			$RunningTestsPersistentSutData = @(RunSQLCommand $query)
+			if ($RunningTestsPersistentSutData -ne 0){
+				writeLog("We found Persistent SUTs, lets check thier status!")
+				# Check the status of each persistent SUT, if its not waiting on persistent, do nothing at this time.
+				foreach($PersistentSUT in $RunningTestsPersistentSutData) {
+					$PersistentSutStatus = $PersistentSUT.Status_ID
+					if ($PersistentSutStatus -eq 14) {
+						$QueueTransient = "True"
+					} elseif ($PersistentSutStatus -eq 8){
+						writeLog("A persisent SUT is still running")
+						$QueueTransient = "False"
+					} elseif ($PersistentSutStatus -eq 6){
+						writeLog("A persisent SUT is still Queued")
+						$QueueTransient = "False"
+					} else {
+						# The Persistent SUT is not in a status we expected. Abort the test MEOW!
+						writeLog("The persistent SUT status is: '$PersistentSutStatus' We cannot process this Aborting test.")
+						$query = "update test_suites set Status_ID = 10 where ID = $RunningTestSuiteID"
+						RunSQLCommand $query
+					}
+				}
+				if ($QueueTransient -eq "True"){
+					# Queue all submitted SUT's that are waiting on a Persistent SUT.
+					writeLog("All Persistent SUT's are waiting, Updating Transient SUT's to queued")
+					$query = "update suts set Status_ID = 6 where Test_Suite_ID = $RunningTestSuiteID and SUT_Type_ID not like 2 and Status_ID = 13"
+					RunSQLCommand $query
+				} else {
+					# A persistent SUT was still running, do nothing this time.
+					writeLog("At least 1 persistent node was running on test id: $RunningTestSuiteID we will check again soon.")
+				}		
+			} else {
+				# If the test does not have a Persistent SUT, do nothing, all Transient SUT's should be queued.
+				writeLog("This test does not have a persisent SUT Test_Suite_ID:$RunningTestSuiteID")
+			}
+		}
+	} else {
+		# No Running Tests were found.
+		writeLog("No Running Tests were found")
+	}
+	writeLog("Finished reviewing Running tests function.")
+}
+
+#=======================================================================================
+function ReviewQueuedTest() {
+	writeLog("Reviewing Queued tests")
+	# Query DB for all Queued test ID's
+	$query = "select id from test_suites where Status_ID = 6"
+	$QueuedTestsData = @(RunSQLCommand $query)
+	if ($QueuedTestsData.Count -ne 0) {
+		foreach ($QueuedTest in $QueuedTestsData){
+			$QueuedTestSuiteID = $QueuedTest.id 
+			# Determine if the test has a Persistent SUT
+			$query = "select ID,Status_ID,SUT_Type_ID from suts where SUT_Type_ID = 2 and Test_Suite_ID = $QueuedTestSuiteID"
+			$QueuedTestPersistentSutData = @(RunSQLCommand $query)
+			if ($QueuedTestPersistentSutData -ne 0){
+				writeLog("We found Persistent SUTs, lets Queue them.")
+				# Mark each persistent SUT as queued.
+				foreach($PersistentSUT in $QueuedTestPersistentSutData) {
+					$PersistentSUTID = $PersistentSUT.ID
+					writeLog("Setting Persistent SUT id : $PersistentSUTID to Queued")
+					$query = "update suts set Status_ID = 6 where id = $PersistentSUTID"
+					RunSQLCommand $query
+				}
+				# Update the Tranisent SUT's to Waiting on Persistent
+				writeLog("Updating the Tranisent SUT's status to Waiting on Persistent")
+				$query = "update suts set Status_ID = 13 where SUT_Type_ID = 1 and Test_Suite_ID = $QueuedTestSuiteID"
+				RunSQLCommand $query
+			} else {
+				# If the test does not have a persistent SUT, just Queue all of the Transient SUT's.
+				writeLog("The test id: $QueuedTestSuiteID does not have any Persistent SUTs, Marking all SUTs to Queued.")
+				$query = "update suts set Status_ID = 6 where Test_Suite_ID = $QueuedTestSuiteID"
+				RunSQLCommand $query
+			}
+			# Set the Overall Test to Running
+			writeLog("Now that an SUT is queued, we are marking the test as Running.")
+			$query = "update test_suites set Status_ID = 8 where ID = $QueuedTestSuiteID"
+			RunSQLCommand $query
+		}
+	} else {
+		# No Queued tests were found.
+		writeLog("No Queued Tests were found")
+	}
+	writeLog("Finished reviewing Queued tests function.")
+}
+
+#=======================================================================================
+function AssignQueuedSUTs() {
+#Get a list of all of the Queued SUT's
+#foreach
+#  Are any agent_mgrs below the MAX that can run the Available workflow? (Agent_mgr + Hypervisor_Type/IP + Workflow) and enabled status.
+#  is the hypervisor active?
+#  Is the hypervisor maxed?
+#  Does that hypervisor have the template available?
+#  if all yes, Assign the SUT.
+
+
+# or do I want to do it based on Hypervisor availability?
+
+}
+
+#=======================================================================================
 #    _  _  _____                    ____       _             
 #  _| || ||_   _|__  __ _ _ __ ___ | __ )  ___| | __ _ _   _ 
 # |_  ..  _|| |/ _ \/ _` | '_ ` _ \|  _ \ / _ \ |/ _` | | | |
