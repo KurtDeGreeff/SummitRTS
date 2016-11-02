@@ -32,7 +32,8 @@ $DefaulttargetServer = "localhost"
 $DefaulXMLDocument = "$SCRIPTDIR\exampleXML.xml"
 # Create index counters
 $vmCount = 1000
-
+# set Shell Title
+$host.ui.RawUI.WindowTitle = "SummitRTS Test Submission"
 #=======================================================================================
 
 # Set defaults if params are blank
