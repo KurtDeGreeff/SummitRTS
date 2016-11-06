@@ -219,17 +219,34 @@ function ReviewQueuedTest() {
 
 #=======================================================================================
 function AssignQueuedSUTs() {
-#Get a list of all of the Queued SUT's
-#foreach
-#  Are any agent_mgrs below the MAX that can run the Available workflow? (Agent_mgr + Hypervisor_Type/IP + Workflow) and enabled status.
-#  is the hypervisor active?
-#  Is the hypervisor maxed?
-#  Does that hypervisor have the template available?
-#  if all yes, Assign the SUT.
-
-
-# or do I want to do it based on Hypervisor availability?
-
+	# Keep in mind this is just to Assign and SUT, not Start one!
+	# Get a list of all of the Queued SUTs
+	writeLog("Reviewing list of all Queued SUT's.")
+	$query = "select * from suts where Status_ID = 6"
+	$QueuedSUTsData = @(RunSQLCommand $query)
+	foreach($QueuedSUT in $QueuedSUTsData) {
+		# Get the SUT info! (Hypervisor_Type_ID,Workflow_ID)
+		$Sut_ID = $QueuedSUT.ID
+		$SUT_Hyp_type = $QueuedSUT.Hypervisor_Type_ID
+		$SUT_Worflow = $QueuedSUT.Workflow_ID
+		# Query the DB to find any Available sequence 
+		writeLog("Determining if there are any Agent Managers that match the Workflow and Hypervisor type for SUT_ID: $Sut_ID")
+		$query = "select * from available_workflows where Workflow_ID = $SUT_Worflow and Hypervisor_Type_ID = $SUT_Hyp_type and Status_ID = 11"
+		$AvailableWorkflowData = @(RunSQLCommand $query)
+		# If it not empty, Assign the SUT to the first available Agent Manager
+		if ($AvailableWorkflowData -ne $null) {
+			# Get the first Object's Agent Manager ID
+			$Agent_Mgr_ID = $AvailableWorkflowData[0].Agent_Mgr_ID
+			writeLog("Assigning SUT_ID: $Sut_ID to Agent_Manager: $Agent_Mgr_ID")
+			$query = "update suts set Agent_Manager_ID = $Agent_Mgr_ID,Status_ID = 7 where ID = $Sut_ID"
+			RunSQLCommand $query
+		} else {
+			# No Available workflows were found or enabled.
+			writeLog("No available Workflows were found or enabled.")
+		}
+	}
+	# No more SUT's to reviewing
+	writeLog("Finished reviewing Queued SUTs")
 }
 
 #=======================================================================================
