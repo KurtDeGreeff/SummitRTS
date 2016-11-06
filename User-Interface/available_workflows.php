@@ -34,9 +34,7 @@ $(document).ready(function() {
 							<tr>
 							<th>ID</th>
 							<th>Agent_MGR_IP</th>
-							<th>Hypervisor IP</th>
-							<th>Hypervisor_MGR</th>
-							<th>Hypervisor Desc.</th>
+							<th>Hypervisor Type</th>
 							<th>Workflow_Name</th>
 							<th>Status</th>
 							<th>date_modified</th>
@@ -49,20 +47,18 @@ $(document).ready(function() {
 							$pdo = Database::connect();
 							$sql = 'select aw.ID, ' 
 										. 'aw.Agent_Mgr_ID, '
-										. 'aw.Hypervisor_ID, '
+										. 'aw.Hypervisor_Type_ID, '
 										. 'aw.Workflow_ID, '
 										. 'aw.Status_ID, '
 										. 'am.IP_Address, '
-										. 'h.Mgmt_IP, '
-										. 'h.IP_Address as hyp_IP, '
-										. 'h.description, '
+										. 'ht.Name as Hypervisor_Type, '
 										. 'w.Name, '
 										. 'am.date_modified, '
 										. 's.Status, '
 										. 's.HtmlColor '
 									. 'from AVAILABLE_WORKFLOWS aw '
 									. 'join AGENT_MANAGERS am on aw.Agent_Mgr_ID=am.ID '
-									. 'join HYPERVISORS h on aw.Hypervisor_ID=h.ID '
+									. 'join HYPERVISOR_TYPES ht on aw.Hypervisor_Type_ID=ht.ID '
 									. 'join WORKFLOWS w on aw.Workflow_ID=w.ID '
 									. 'join STATUS s on aw.Status_ID=s.ID ';
 						
@@ -70,9 +66,7 @@ $(document).ready(function() {
 								echo '<tr>';
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['IP_Address'] . '</td>';		
-								echo '<td>'. $row['hyp_IP'] . '</td>';		
-								echo '<td>'. $row['Mgmt_IP'] . '</td>';
-								echo '<td>'. $row['description'] . '</td>';
+								echo '<td>'. $row['Hypervisor_Type'] . '</td>';		
 								echo '<td>'. $row['Name'] . '</td>';
 								echo '<td style=background-color:'. $row['HtmlColor'] . '>' . $row['Status'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';

@@ -12,8 +12,8 @@ VALUES (1,'Down','#CC0000','Red'),
 (9,'Complete','#00CC66','LightGreen'),
 (10,'Cancelled','#333333','Charcoal'),
 (11,'Enabled','#006633','Green'),
-(12,'Disabled','#CC0000','Red');
-(13,'Waiting_on_Persistent','#00ff00','NeonGreen');
+(12,'Disabled','#CC0000','Red'),
+(13,'Waiting_on_Persistent','#00ff00','NeonGreen'),
 (14,'Waiting_on_Transient','#FFFF00','NeonYellow');
 
 INSERT INTO TEST_RESULT (ID, Name, HtmlColor, HTML_Description)
@@ -64,8 +64,8 @@ VALUES (1,'TestCase_Default','c:\\SummitRTS\\TestCase_Default'),
 INSERT INTO AGENT_MANAGERS (ID, IP_Address, STATUS_ID, Wait, Logfile)
 VALUES (1, '127.0.0.1',1,60,'c:\\SummitRTS\\Agent_Manager\\Agent_Manager.log'),(99,'0.0.0.0',1,99,'none');
 
-INSERT INTO AVAILABLE_WORKFLOWS (ID, Agent_Mgr_ID, Hypervisor_ID, Workflow_ID, Status_ID)
-VALUES (1,1,1,1,11),(2,1,1,2,11),(3,1,2,1,11),(4,1,2,2,11),(5,1,3,1,11),(6,1,3,2,11),(7,1,4,1,11),(8,1,4,2,11);
+INSERT INTO AVAILABLE_WORKFLOWS (ID, Agent_Mgr_ID, Hypervisor_Type_ID, Workflow_ID, Status_ID)
+VALUES (1,1,1,1,11),(2,1,1,2,11),(3,1,2,1,11),(4,1,2,2,11),(5,1,3,1,11),(6,1,3,2,11);
 
 INSERT INTO TEST_SUITES (ID, Name, Status_ID, Total_SUT)
 VALUES (1,'Sampletest1',5,2),(2,'Sampletest2',9,2);
