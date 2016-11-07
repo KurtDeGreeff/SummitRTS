@@ -28,7 +28,7 @@ $ManagerAction=$args[0]
 $LogFile = "C:\SummitRTS\Queue_Manager\Queue_Manager.log"
 
 #=======================================================================================
-# Device Manager
+# Queue Manager
 #=======================================================================================
 $ManagerRUNNING = $true
 			
