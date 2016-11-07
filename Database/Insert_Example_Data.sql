@@ -61,8 +61,8 @@ INSERT INTO WORKFLOWS (ID, Name, Script_Path)
 VALUES (1,'TestCase_Default','c:\\SummitRTS\\TestCase_Default'),
 (2,'MultiMachine_Default','c:\\SummitRTS\\MultiMachine_Default');
 
-INSERT INTO AGENT_MANAGERS (ID, IP_Address, STATUS_ID, Wait, Logfile)
-VALUES (1, '127.0.0.1',1,60,'c:\\SummitRTS\\Agent_Manager\\Agent_Manager.log'),(99,'0.0.0.0',1,99,'none');
+INSERT INTO AGENT_MANAGERS (ID, IP_Address, STATUS_ID, Wait, Logfile, Max_Concurrent_SUTS)
+VALUES (1, '127.0.0.1',1,60,'c:\\SummitRTS\\Agent_Manager\\Agent_Manager.log',4),(99,'0.0.0.0',1,99,'none',1);
 
 INSERT INTO AVAILABLE_WORKFLOWS (ID, Agent_Mgr_ID, Hypervisor_Type_ID, Workflow_ID, Status_ID)
 VALUES (1,1,1,1,11),(2,1,1,2,11),(3,1,2,1,11),(4,1,2,2,11),(5,1,3,1,11),(6,1,3,2,11);

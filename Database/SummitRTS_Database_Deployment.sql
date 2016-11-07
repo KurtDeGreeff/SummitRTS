@@ -137,6 +137,7 @@ CREATE TABLE AGENT_MANAGERS (
   Status_ID int(11) NOT NULL,
   Wait int(11) NOT NULL,
   Logfile varchar(100) NOT NULL,
+  Max_Concurrent_SUTS int(11) NOT NULL,
   PRIMARY KEY (ID),
   UNIQUE (IP_Address),
   FOREIGN KEY (Status_ID) REFERENCES STATUS(ID),

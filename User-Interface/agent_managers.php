@@ -37,6 +37,7 @@ $(document).ready(function() {
 							<th>IP_Address</th>
 							<th>Status</th>
 							<th>Wait</th>
+							<th>Max_Concurrent</th>
 							<th>LogFile</th>
 							<th>date_modified</th>
 							<th>Action</th>
@@ -49,6 +50,7 @@ $(document).ready(function() {
 							$sql = 'select am.ID, ' 
 										. 'am.IP_Address, '
 										. 'am.Status_ID, '
+										. 'am.Max_Concurrent_SUTS, '
 										. 's.Status, '
 										. 's.HtmlColor, '
 										. 'am.Wait, '
@@ -63,6 +65,7 @@ $(document).ready(function() {
 								echo '<td>'. $row['IP_Address'] . '</td>';
 								echo '<td style=background-color:'. $row['HtmlColor'] . '>' . $row['Status'] . '</td>';								
 								echo '<td>'. $row['Wait'] . '</td>';
+								echo '<td>'. $row['Max_Concurrent_SUTS'] . '</td>';
 								echo '<td>'. $row['LogFile'] . '</td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	
