@@ -15,7 +15,7 @@ $SCRIPTDIR = split-path $MYINV.MyCommand.Path
 . "$SCRIPTDIR\..\utilities\general-cmdlets.ps1"
 . "$SCRIPTDIR\..\utilities\connection_details.ps1"
 . "$SCRIPTDIR\..\utilities\mysql_cmdlets.ps1"
-. "$SCRIPTDIR\manager-cmdlets.ps1"
+. "$SCRIPTDIR\agentmgr-cmdlets.ps1"
 # Set Shell Title
 $host.ui.RawUI.WindowTitle = "SummitRTS Agent Manager"
 #=======================================================================================
@@ -25,6 +25,10 @@ $host.ui.RawUI.WindowTitle = "SummitRTS Agent Manager"
 $AgentManagerAction=$args[0]
 # Set the log file for the Manager.
 $LogFile = "C:\SummitRTS\Agent_Manager\Agent_Manager.log"
+
+# Might want to get properties from the DB here. So we know where to copy logs to.
+
+
 
 #=======================================================================================
 # Agent Manager
