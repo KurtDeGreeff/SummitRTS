@@ -45,7 +45,7 @@ do {
 	#Query the DB for the Agent Manager Status
 	writeLog("#######################################################")
 	writeLog("Querying the Database to determine Agent Manager Status")
-	$query = "select Status_ID,Wait,LogFile from agent_managers where IP_Address = '$AgentManagerIP'"
+	$query = "select ID,Status_ID,Wait,LogFile,Max_Concurrent_SUTS from agent_managers where IP_Address like '$AgentManagerIP'"
 	$AgentManagerData = @(RunSQLCommand $query)
 	$AgentManagerID = $AgentManagerData[0].ID
 	$AgentManagerStatus = $AgentManagerData[0].Status_ID
@@ -62,7 +62,7 @@ do {
     if($AgentManagerAction -eq "START"){
         #Set the status of the Agent Manager to "Starting_Up"
 		writeLog("The Manager status is ${AgentManagerStatus}, Lets start it up!")
-		$query = "update agent_managers set Status_ID = 3 where ID = $AgentManagerID"
+		$query = "update agent_managers set Status_ID = 3 where ID like $AgentManagerID"
 		RunSQLCommand $query
 		$AgentManagerAction = "Done"
         # wait 10 seconds
@@ -74,6 +74,7 @@ do {
 	# Start-up Tasks 
 	####################################
     if($AgentManagerStatus -eq 3){ #Starting_Up
+		writeLog("Begining Startup Tasks for Agent Manager. Cancelling any running tests.")
         # Cancel any Running SUT's for this Agent Manager
         CancelRunningSUTs
 		# wait 10 seconds
@@ -88,6 +89,8 @@ do {
 	# Normal Operation Tasks 
 	####################################
     if($AgentManagerStatus -eq 2){ # Up and Running
+		writeLog("#############################################")
+		writeLog("Agent Manager is running, Lets review Assigned SUT's")
         # Start Assigned Sut
         StartAssignedSUT
 		# wait 10 seconds
@@ -102,6 +105,7 @@ do {
 	####################################
     if($AgentManagerStatus -eq 4){ #Shutting_down
         # Cancel any Running SUT's for this Agent Manager
+		writeLog("Beginning Shutdown Procedures, Cancelling any running SUT's")
         CancelRunningSUTs
 		# wait 10 seconds
 		writeLog ("Pausing 10 seconds")

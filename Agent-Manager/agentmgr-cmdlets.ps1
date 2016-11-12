@@ -56,6 +56,7 @@ function StartAssignedSUT() {
         $AssignedSUTCount = $AssignedSutData.Count
         if ($AssignedSUTCount -ne $null){
             # Get the SUT info
+            writeLog("Loop through each SUT to see if we can get the Workflow started.")
             foreach ($assignedSUT in $AssignedSutData) {
                 $sutID = $assignedSUT.ID
                 $sutName = $assignedSUT.Name
@@ -69,21 +70,31 @@ function StartAssignedSUT() {
                 # Check if any data was returned.
                 if ($SutHypervisorDataCount -ne $null){
                     # There were enabled hypervisors!
+                    writeLog("Loop through each Enabled Hypervisor to see if one is not at its max.")
                     foreach ($SUTHypervisor in $SutHypervisorData) {
                         $SutHypervisorID = $SUTHypervisor.ID
                         $SutHypervisorMax = $SUTHypervisor.Max_Concurrent_SUTS
                         $SutHypervisorIP = $SUTHypervisor.IP_Address
                         # Check to see if the hypervisor and less than Max
-                        $query = "select * from suts where Hypervisor__ID like $SutHypervisorID and Status_ID like 8"
+                        $query = "select * from suts where Hypervisor_ID like $SutHypervisorID and Status_ID like 8"
                         $runningSutHypervisorData = @(RunSQLCommand $query)
                         $RunningSutHypervisorCount = $runningSutHypervisorData.Count
                         if ($RunningSutHypervisorCount -lt $SutHypervisorMax) {
                             # The hypervisor is below the max, update the sut Hypervisor ID and start the Workflow.
                             writeLog("The hypervisor: $SutHypervisorIP is ready for a test. Assigning SUT.")
                             #First update the SUT with the Hypervisor Data
-
+                            $query = "update suts set Hypervisor_ID = $SutHypervisorID where ID like $sutID"
+                            RunSQLCommand $query
+                            # Get the Workflow Data
+                            writeLog("Query the DB for the SUT's workflow Data.")
+                            $query = "select * from workflows where ID like $sutWorkflowID"
+                            $workflowData = @(RunSQLCommand $query)
+                            $workflow_Name = $workflowData.Name
+                            $Workflow_Script = $workflowData.Script_Path
                             # Start the Workflow Script passing in needed data.
-
+                            writeLog("Starting Workflow: $workflow_Name for sut: $sutID with Script path: $Workflow_Script")
+                            Start-Process -WindowStyle Normal powershell.exe -ArgumentList "-file $Workflow_Script", "$sutID", "$sutName"
+                            pause 5
                             # Where will this break to (It needs to break out of the list of Hypervisors)?
                             Break
                         } else {
@@ -104,7 +115,7 @@ function StartAssignedSUT() {
         # The agent cannot run anymore SUT's exit loop.
         writeLog("The Agent is running the maximum number of SUTs right now.")
     }
-
+    writeLog("The Agent has finished reviewing Assigned SUT's")
 }
 #=======================================================================================
 #    _  _  _____                    ____       _             
