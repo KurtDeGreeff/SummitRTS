@@ -51,6 +51,7 @@ do {
 	$AgentManagerStatus = $AgentManagerData[0].Status_ID
 	$AgentManagerWait = $AgentManagerData[0].Wait
 	$LogFile = $AgentManagerData[0].LogFile
+	$Agent_Max_Concurrent = $AgentManagerData[0].Max_Concurrent_SUTS
 	writeLog("Agent Manager ID is : ${AgentManagerID}")
 	writeLog("Agent Manager Status is : ${AgentManagerStatus}")
 	writeLog("Agent Manager Wait is : ${AgentManagerWait}")
