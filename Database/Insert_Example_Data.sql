@@ -58,8 +58,8 @@ INSERT INTO HYPERVISOR_VMS(ID, Hypervisor_ID, VM_Template_ID, Status_ID, Tools_A
 VALUES (1,1,1,11,1),(2,2,1,11,1),(3,3,1,11,1),(4,4,1,11,1),(5,1,2,12,1),(6,2,2,11,1),(7,3,2,11,1),(8,4,2,11,1),(9,1,3,12,1),(10,2,3,11,1),(11,3,3,12,1),(12,4,3,12,1),(13,1,4,12,0),(14,2,4,11,0),(15,3,4,12,0),(16,4,4,12,0);
 
 INSERT INTO WORKFLOWS (ID, Name, Script_Path)
-VALUES (1,'TestCase_Default','C:\\OPEN_PROJECTS\\SummitRTS\\WorkflowsTestCase_Default'),
-(2,'MultiMachine_Default','C:\\OPEN_PROJECTS\\SummitRTS\\MultiMachine_Default');
+VALUES (1,'TestCase_Default','C:\\OPEN_PROJECTS\\SummitRTS\\Workflows\\TestCase_Default\\workflow.ps1'),
+(2,'MultiMachine_Default','C:\\OPEN_PROJECTS\\SummitRTS\\Workflows\\MultiMachine_Default\\workflow.ps1');
 
 INSERT INTO AGENT_MANAGERS (ID, IP_Address, STATUS_ID, Wait, Logfile, Max_Concurrent_SUTS)
 VALUES (1, '127.0.0.1',1,60,'c:\\SummitRTS\\Agent_Manager\\Agent_Manager.log',4),(99,'0.0.0.0',1,99,'none',1);
