@@ -27,8 +27,9 @@ $AgentManagerAction=$args[0]
 $LogFile = "C:\SummitRTS\Agent_Manager\Agent_Manager.log"
 
 # Might want to get properties from the DB here. So we know where to copy logs to.
-
-
+$query = "select * from rts_properties where Name like 'WIN_RESULTS_SHARE'"
+$PropertyData = @(RunSQLCommand $query)
+$SharedDrive = $PropertyData.val
 
 #=======================================================================================
 # Agent Manager

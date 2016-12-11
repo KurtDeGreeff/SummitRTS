@@ -93,7 +93,7 @@ function StartAssignedSUT() {
                             $Workflow_Script = $workflowData.Script_Path
                             # Start the Workflow Script passing in needed data.
                             writeLog("Starting Workflow: $workflow_Name for sut: $sutID sutname: $sutName with Script path: $Workflow_Script")
-                            Start-Process -WindowStyle Normal powershell.exe -ArgumentList "-file $Workflow_Script", "$sutID", "$sutName"
+                            Start-Process -WindowStyle Normal powershell.exe -ArgumentList "-file $Workflow_Script", "$sutID", "$sutName", "$SharedDrive"
                             pause 5
                             # Where will this break to (It needs to break out of the list of Hypervisors)?
                             Break
