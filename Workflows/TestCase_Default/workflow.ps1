@@ -50,30 +50,15 @@ $query = "select sut.ID,
 			ts.Name as TestName,
 			vt.Ref_Name,
 			ht.Name as Hypervisor_Type,
-			h.IP_Address as Hypervisor_IP,
-            h.Username,
-            h.Password,
-            h.version,
-            h.Mgmt_IP,
-            h.Datacenter,
-            h.Datastore,
 			st.Name as SUT_Type
 		from SUTs sut
 		join TEST_SUITES ts on sut.Test_Suite_ID=ts.ID
 		join VM_TEMPLATES vt on sut.VM_Template_ID=vt.ID
 		join HYPERVISOR_TYPES ht on sut.Hypervisor_Type_ID=ht.ID
-		join HYPERVISORS h on sut.Hypervisor_ID=h.ID
 		join SUT_TYPE st on sut.SUT_Type_ID=st.ID
         where sut.ID like $SUT_ID;"
 $sutData = @(RunSQLCommand $query)
 $testname = $sutData.testname
-$hyp_IP = $sutData.Hypervisor_IP
-$hyp_UN = $sutData.Username
-$hyp_PW = $sutData.Password
-$hyp_MGR = $sutData.Mgmt_IP
-$DATACENTER = $sutData.Datacenter
-$DATASTORE = $sutData.Datastore
-$hypVersion = $sutData.version
 $hypervisor_Type = $sutData.Hypervisor_Type
 $templateName = $sutData.Ref_Name
 
@@ -82,13 +67,6 @@ writeLog("----------------------")
 writeLog("SUT_ID: $sut_ID")
 writeLog("SutName: $sutName")
 writeLog("Testname: $testname")
-writeLog("hyp_IP: $hyp_IP")
-writeLog("hypervisor Username: $hyp_UN")
-writeLog("hypervisor Password: = $hyp_PW")
-writeLog("hypervisor Manager: = $hyp_MGR")
-writeLog("DATACENTER: $Datacenter")
-writeLog("DATASTORE: $Datastore")
-writeLog("hypervisor Version: $hypversion")
 writeLog("hypervisor Type: $hypervisor_Type")
 writeLog("templateName: $templateName")
 writeLog("----------------------")
@@ -145,7 +123,7 @@ foreach($row in $testcaseData) {
 		RunSQLCommand $query
 		#Kick off subprocess to Provision SUT
 
-		if (! (. "${SCRIPTDIR}\..\workflow_utilities\provisionSUT.ps1" $testName $vmName $SUTname Provisioning $Testcase_Id)) {
+		if (! (. "${SCRIPTDIR}\..\workflow_utilities\provisionSUT.ps1" $testName $SUTname $hypervisor_Type $LogFile)) {
 
 			writeLog("Something failed during Provisioning, we should destroy node now.")
 			$query = "update test_cases set Status_ID='9', Result_ID='4' where ID = '$testcase_ID'"

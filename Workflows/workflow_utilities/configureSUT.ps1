@@ -1,6 +1,5 @@
 #=======================================================================================
-# Author: Justin Sider
-# Purpose: Provision a 'System Under Test'
+# Purpose: Perform Post Provisioning steps to configure SUT for testing.
 #=======================================================================================
 
 #=======================================================================================
@@ -24,10 +23,10 @@ enable-vsphere-cli-in-powershell
 $testName=$args[0]
 $vmName=$args[1]
 $SUTname=$args[2]
-
-# Other Args
-$VMUN = "administrator"
-$VMPW = "BelayTech2015"
+$testcase_name=$args[3]
+$Testcase_Id=$args[4]
+$vmName = $SUTname
+# Defaults
 $LogFile = "c:\share\SutResults\$testName\$SUTname\agent.log"
 $MAXWAITSECS = 60 * 3
 $TOOLSWAIT = 60 * 6
@@ -37,26 +36,21 @@ $AgentStatus = $true
 #=======================================================================================
 # Belay Device
 #=======================================================================================
+
 # Echo a line about starting the test
-writeLog("Starting Configure_SUT for test: ${testName}")
+writeLog("Starting Provisioning for test: ${testName}")
 writeLog("The SUTname for this test is : ${SUTname}")
 writeLog("The Template_VM used for this test is ${TemplateName}")
 
 #Function to Grab the Template username and password
 $query = "select * from template_vm_information where Easy_Name like '$TemplateName'"
 $TemplateVMData = @(RunSQLCommand $query)
+$VMUN = $TemplateVMData.OS_Username
+$VMPW = $TemplateVMData.OS_Password
 $OS_Type = $TemplateVMData.OS_Type
-$Tools_Available = $TemplateVMData.Tools_Available
+writeLog("Template UN is : $VMUN")
+writeLog("Template PW is : $VMPW")
 writeLog("Template OS_Type is : $OS_Type")
-writeLog("Template Tools_Available is : $Tools_Available")
-
-####################################
-# Start Of SUT Configuration
-####################################
-
-# Echo a line about starting the test
-writeLog("Starting SUT Configuration for test: ${testName} on Template VM : ${vmName}")
-writeLog("The SUTname for this test is : ${SUTname}")
 
 # Start a loop that we can break out of if needed
 if ($AgentStatus = $true) {
@@ -69,130 +63,127 @@ if ($AgentStatus = $true) {
 		Break
 	}
 	
-	# Ensure the Template VM is not powered on
-	writeLog("ShutdownVm is shutting down the Template VM. Not waiting for more than ${MAXWAITSECS} seconds.")
-	if (! (ShutdownVm $vmName $MAXWAITSECS)) {
-		writeLog("StopVM is forcing a shutdown on the Template VM. Notwaiting for more than ${MAXWAITSECS} seconds.")
-		if (! (StopVm $vmName $MAXWAITSECS)) {
-			writeLog("${vmName} StopVm Failed. Unable to shutdown VM.")
-			$AgentStatus = $False
-			return $AgentStatus
-			Break
-		}
-	}
-	
-	# wait 3 seconds
-	writeLog ("Pausing 3 seconds")
-	pause 3
-	
-	# Clone the Template VM
-	writeLog("CloneVM is creating a clone of the Template VM")
-	$vmClone = $SUTname
-	if (! (CloneVM $vmName $vmClone)) {
-		writeLog("${vmName} failed to Clone.")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
-	}
-	$vmName = $vmClone
+	# Rename the SUTname to vmName
+	$vmName = $SUTname
 	writeLog("Reset the SUT name to ${vmName} to simplify scripts.")
 	
 	# wait 3 seconds
 	writeLog ("Pausing 3 seconds")
 	pause 3
 	
-	# Change a Vm from Non-Persistent to Persistent
-	writeLog("SetHardDisk is setting disk to Persistent. Waiting no more than ${MAXWAITSECS} seconds.")
-	if (! (SetHardDisk "Persistent" $vmClone $MAXWAITSECS)) {
-		writeLog("${vmName} SetHardDisk failed. Unable to set Hard disk to Persistent.")
+	####################################
+	# Start Of provisioning
+	####################################
+	
+	# Copy the files to the Target vm that will be run from the Host server
+	writeLog ("Copying Specify Files to the VM.")
+	#Determine OS_Type to run OS specific command
+	if ($OS_Type -eq "Windows") {
+		Copy-VMGuestFile -Source "c:\share\SutResults\${testName}\${SUTname}\properties.txt" -Destination "c:\device" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Windows\provisionVM.bat" -Destination "c:\device" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Windows\execute_testcase.bat" -Destination "c:\device" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Windows\connectShare.bat" -Destination "c:\device" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Windows\copyScripts.bat" -Destination "c:\device" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+	} Elseif ($OS_Type -eq "Linux") {
+		Copy-VMGuestFile -Source "c:\share\SutResults\${testName}\${SUTname}\properties.txt" -Destination "/device/properties.txt" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Linux\provisionVM.sh" -Destination "/device/provisionVM.sh" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Linux\execute_testcase.sh" -Destination "/device/execute_testcase.sh" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Linux\connectShare.sh" -Destination "/device/connectShare.sh" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Linux\copyScripts.sh" -Destination "/device/copyScripts.sh" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+	} Elseif ($OS_Type -eq "Android") {
+		# No files to copy for ADB, command run on the agent via ADB
+		writeLog("No files were copied for Android")
+	} Else {
+		#No OP
+		WriteLog("No OS_Type-($OS_Type) was found to copy the files")
 		$AgentStatus = $False
 		return $AgentStatus
-		Break
 	}
-	
 	# wait 3 seconds
-	writeLog ("Pausing 3 seconds")
-	pause 3
+	writeLog ("Pausing 10 seconds")
+	pause 10
 	
-	# Power on the Cloned VM
-	writeLog("StartVM is powering on the SUT VM")
-	if (! (StartVM $vmName)) {
-		writeLog("${vmName} failed to power on.")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
-	}
-	
-	# wait 3 seconds
-	writeLog ("Pausing 3 seconds")
-	pause 3
-	
-	# Wait for Power
-	writeLog("WaitForPower. Waiting no more than ${MAXWAITSECS} seconds.")
-	if(! (WaitForPower $vmName $MAXWAITSECS)) {
-		writeLog("${vmName} WaitForPower Failed. VMTools failed to respond. ")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
-	}
-	
-	# wait 3 seconds
-	writeLog ("Pausing 3 seconds")
-	pause 3
-	
-	# Wait for VMtools to start
-	if ($OS_Type -ne "Android") {
-		# Android does not currently support VMtools
-		writeLog("WaitForTools. Waiting no more than ${TOOLSWAIT} seconds.")
-		if(! (WaitForTools $vmName $TOOLSWAIT)) {
-			writeLog("${vmName} WaitForTools Failed. VMTools failed to respond. ")
+	# Run provision script
+	writeLog ("Running $testcase_script")
+	#Determine OS_Type to run OS specific command
+	if ($OS_Type -eq "Windows") {
+		$Echo = Invoke-VMScript -ScriptText "c:\device\$testcase_script $testName $vmName" -VM $vmName -GuestUser $VMUN -GuestPassword $VMPW -ScriptType Bat -ErrorAction SilentlyContinue
+		if ($Echo.ExitCode -ne 0) {
+			writeLog("${vmName} Invoke-VMScript Failed. $testcase_script failed to run. ")
 			$AgentStatus = $False
 			return $AgentStatus
 			Break
 		}
-	}
-	
-	if($OS_Type -eq "Android") {
-		writeLog("Waiting 60 seconds for Android to power on")
-		pause 60
-	}
-	
-	# wait 60 seconds
-	writeLog ("Pausing 60 seconds to obtain proper IPaddress")
-	pause 60
-	
-	# Get and write the IPAddress from the vm to the Database
-	if($Tools_Available -eq $true){
-		writeLog("Querying the Hypervisor for the IP for vm: $vmName")
-		if (! (GetIPAddress $vmName)) {
-			writeLog("${vmName} failed to get IP Address.")
+	} ElseIf ($OS_Type -eq "Linux") {
+		#Perform the Linux equivalent
+		$Echo = Invoke-VMScript -ScriptText "/bin/bash /device/$testcase_script $testName $vmname" -VM $vmname -GuestUser $VMUN -GuestPassword $VMPW -ErrorAction SilentlyContinue
+		if ($Echo.ExitCode -ne 0) {
+			writeLog("${vmName} Invoke-VMScript Failed. $testcase_script failed to run. ")
 			$AgentStatus = $False
 			return $AgentStatus
 			Break
 		}
-	} elseif($Tools_Available -eq $true){
-		writeLog("The vm: $vmname does not have vmtools available.")
+	} Elseif ($OS_Type -eq "Android") {
+		#Start the ADB Provision script
+		if (! (. "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Android\$testcase_script" $testname $vmName $SUTname)) {
+			writeLog("The provision1 script: $testcase_script failed to run")
+			$AgentStatus = $False
+			return $AgentStatus
+			break
+		}
+	} Else {
+		WriteLog("No OS_Type-($OS_Type) was found to execute the script")
+		$AgentStatus = $False
+		return $AgentStatus
 	}
-		
 	# wait 3 seconds
 	writeLog ("Pausing 3 seconds")
 	pause 3
-		
-	# Get and write out the Console URL link
-	writeLog ("Getting Console URL link to write to log file")
-	if (! (GetConsoleUrl $vmName $hypVersion $MAXWAITSECS)) {
-		writeLog("${vmName} failed to get URL.")
+	
+	# Add Logfile paths to the Database
+	writeLog("Add Logfile paths to the Database")
+	AddSUTLogFilesToDB $Testcase_Id $testName $vmName $testcase_name
+	
+	# Determine Pass/Fail by searching for a result string in the Test's log file.
+	writeLog("Determine Pass/Fail by searching for a result string in the Test's log file.")
+	$filename = "c:\share\SutResults\${testName}\${vmName}\${testcase_name}\device.log"
+	$SearchStringPass = "PROVISIONING_PASSED"
+	$SelPASS = select-string -pattern $SearchStringPass -path $FileName
+	$SearchStringFail = "PROVISIONING_FAILED"
+	$SelFAIL = select-string -pattern $SearchStringFail -path $FileName
+	if ($SelFAIL -ne $null) {
+		$query = "update test_cases set Testcase_Status='Complete', Testcase_Result='FAIL' where SUT_Name = '$vmName' and Testcase_name = '$testcase_name'"
+		RunSQLCommand $query
+		writeLog("Provisioning has Failed, We found a failure string in device.log")
+		$AgentStatus = $False
+		Break
+	}
+	If ($SelPASS -eq $null)	{
+		$query = "update test_cases set Testcase_Status='Complete', Testcase_Result='FAIL' where SUT_Name = '$vmName' and Testcase_name = '$testcase_name'"
+		RunSQLCommand $query
+		writeLog("Provisioning has Failed, We did not find the correct string in device.log")
+	} Else {
+		$query = "update test_cases set Testcase_Status='Complete', Testcase_Result='PASS' where SUT_Name = '$vmName' and Testcase_name = '$testcase_name'"
+		RunSQLCommand $query
+		writeLog("Provisioning has Passed, We found the correct string in device.log")
+	}
+
+	# Take a Snapshot named PostProvision
+	writeLog("CreateSnapshot is creating a PostProvision Snapshot of the SUT")
+	if (! (CreateSnapshot $vmName $MAXWAITSECS)) {
+		writeLog("${vmName} failed to Snapshot.")
 		$AgentStatus = $False
 		return $AgentStatus
 		Break
 	}
 	
-	# wait 3 seconds
-	writeLog ("Pausing 3 seconds")
-	pause 3
+	# wait 10 seconds
+	writeLog ("Pausing 10 seconds")
+	pause 10
+	
 }
-writeLog("ConfigureSUT Agent status is ${AgentStatus}")
+writeLog("provisionSUT Agent status is ${AgentStatus}")
 return $AgentStatus
 ####################################
-# End Of SUT Configuration
+# End Of SUT Provisioning
 ####################################

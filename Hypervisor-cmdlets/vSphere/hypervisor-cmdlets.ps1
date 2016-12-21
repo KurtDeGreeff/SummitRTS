@@ -20,7 +20,7 @@ function SetVCenter($Tvcenter=$Vcenter) {
 }
 
 #=======================================================================================
-function ConnectVcenter($Tvcenter=$vCenter, $User=$VcenterUN, $Pass=$VcenterPW) {
+function ConnectVcenter($Tvcenter=$vCenter, $User=$hyp_UN, $Pass=$hyp_PW) {
 	
 	#Connect to the Vcenter
 	if (! $DEVICECONN){ enable-vsphere-cli-in-powershell }
