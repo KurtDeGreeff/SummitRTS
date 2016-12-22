@@ -8,59 +8,93 @@
 # This will remove the need to keep clicking R
 set-ExecutionPolicy Bypass
 
-# Enables all of the needed cmdlets
-. "$SCRIPTDIR\device-cmdlets.ps1"
-. "$SCRIPTDIR\mysql-cmdlets.ps1"
-. "$SCRIPTDIR\$hypervisor_Type\hypervisor-cmdlets.ps1"
-writeLog("Root Execution directory is '${SCRIPTDIR}'")
 
-# Enable Powercli
-enable-vsphere-cli-in-powershell
+#=======================================================================================
+# Agent Arguments
+#=======================================================================================
+$testName=$args[0]
+$SUTname=$args[1]
+$hypervisor_Type=$args[2]
+$LogFile=$args[3]
+
+$vmName = $SUTname
+
+# Enables all of the needed cmdlets
+. "$SCRIPTDIR\..\..\Hypervisor-cmdlets\$hypervisor_Type\hypervisor-cmdlets.ps1"
 
 #=======================================================================================
 # User Arguments
 #=======================================================================================
-
-$testName=$args[0]
-$vmName=$args[1]
-$SUTname=$args[2]
-$vmName = $SUTname
-# Defaults
-$VMUN = "administrator"
-$VMPW = "BelayTech2015"
-$LogFile = "c:\share\SutResults\$testName\$SUTname\agent.log"
 $MAXWAITSECS = 60 * 3
 $TOOLSWAIT = 60 * 6
 $VCcenterCONN = $Null
 $AgentStatus = $true
 
 #=======================================================================================
-# Belay Device
+
 #=======================================================================================
-#Function to Grab the Template username and password
-$query = "select * from template_vm_information where Easy_Name like '$TemplateName'"
-$TemplateVMData = @(RunSQLCommand $query)
-$OS_Type = $TemplateVMData.OS_Type
-writeLog("Template OS_Type is : $OS_Type")
+# Get All the SUT related items needed to run the workflow
+$query = "select sut.ID,
+			sut.Name,
+			sut.Test_Suite_ID,
+			sut.VM_Template_ID,
+			sut.Hypervisor_Type_ID,
+			sut.Hypervisor_ID,
+			sut.SUT_Type_ID,
+			sut.date_modified,
+			ts.Name as TestName,
+			vt.Ref_Name,
+			vt.OS_Type,
+			ht.Name as Hypervisor_Type,
+			h.IP_Address as Hypervisor_IP,
+            h.Username,
+            h.Password,
+            h.version,
+            h.Mgmt_IP,
+            h.Datacenter,
+            h.Datastore,
+			st.Name as SUT_Type
+		from SUTs sut
+		join TEST_SUITES ts on sut.Test_Suite_ID=ts.ID
+		join VM_TEMPLATES vt on sut.VM_Template_ID=vt.ID
+		join HYPERVISOR_TYPES ht on sut.Hypervisor_Type_ID=ht.ID
+		join HYPERVISORS h on sut.Hypervisor_ID=h.ID
+		join SUT_TYPE st on sut.SUT_Type_ID=st.ID
+        where sut.ID like $SUT_ID;"
+$sutData = @(RunSQLCommand $query)
+$testname = $sutData.testname
+$hyp_IP = $sutData.Hypervisor_IP
+$hyp_UN = $sutData.Username
+$hyp_PW = $sutData.Password
+$hyp_MGR = $sutData.Mgmt_IP
+$DATACENTER = $sutData.Datacenter
+$DATASTORE = $sutData.Datastore
+$hypVersion = $sutData.version
+$hypervisor_Type = $sutData.Hypervisor_Type
+$templateName = $sutData.Ref_Name
+$OS_Type = $sutData.OS_Type
+$hypervisor_Id = $sutData.Hypervisor_ID
+$VM_Template_ID = $sutData.VM_Template_ID
+
 ####################################
-# Start Of SUT Configuration
+# Start Of SUT Destruction
 ####################################
 
 # Echo a line about starting the test
-writeLog("Starting DestroySUT for test: ${testName} on VM : ${vmName}")
-writeLog("The SUTname for this test is : ${SUTname}")
+writeLog("Starting DestroySUT for test: ${testName} on SUT : ${SUTname}")
 
 # Start a loop that we can break out of if needed
 if ($AgentStatus = $true) {
 	# Connect to the Vcenter or server
+	if ($hypervisor_Type -eq "vSphere"){
 	writeLog("ConnectVcenter is attaching to vcenter ${Vcenter}.")
-	if(! $DEVICECONN -and ! ($DEVICECONN = ConnectVcenter)) {
-		writeLog("ConnectVcenter ${Vcenter} Failed.")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
+		if(! $DEVICECONN -and ! ($DEVICECONN = ConnectVcenter)) {
+			writeLog("ConnectVcenter ${Vcenter} Failed.")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
 	}
-	
 	# wait 5 seconds
 	writeLog ("Pausing 5 seconds")
 	pause 5
@@ -105,9 +139,11 @@ if ($AgentStatus = $true) {
 	pause 3
 	
 	# Disconnect from vCenter
-	writeLog("DisconnetVC is dropping the connection to vcenter ${Vcenter}.")
-	if (! (DisconnetVC $DEVICECONN)) {
-		writeLog("DisconnetVC ${Vcenter} Failed.")
+	if ($hypervisor_Type -eq "vSphere"){
+		writeLog("DisconnetVC is dropping the connection to vcenter ${Vcenter}.")
+		if (! (DisconnetVC $DEVICECONN)) {
+			writeLog("DisconnetVC ${Vcenter} Failed.")
+		}
 	}
 }
 writeLog("DestroySUT Agent status is ${AgentStatus}")

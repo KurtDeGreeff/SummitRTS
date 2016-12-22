@@ -1,6 +1,5 @@
 #=======================================================================================
-# Author: Justin Sider
-# Purpose: Running a Testcase against a 'System Under Test'
+# Purpose: Execute Testcase Scripts against a 'System Under Test'
 #=======================================================================================
 
 #=======================================================================================
@@ -9,58 +8,94 @@
 # This will remove the need to keep clicking R
 set-ExecutionPolicy Bypass
 
-# Enables all of the needed cmdlets
-. "$SCRIPTDIR\device-cmdlets.ps1"
-. "$SCRIPTDIR\mysql-cmdlets.ps1"
-. "$SCRIPTDIR\$hypervisor_Type\hypervisor-cmdlets.ps1"
-writeLog("Root Execution directory is '${SCRIPTDIR}'")
 
-# Enable Powercli
-enable-vsphere-cli-in-powershell
+#=======================================================================================
+# Agent Arguments
+#=======================================================================================
+$testName=$args[0]
+$SUTname=$args[1]
+$hypervisor_Type=$args[2]
+$LogFile=$args[3]
+$testcase_ID=$args[4]
+$testcase_name=$args[5]
+$vmName = $SUTname
+
+
+# Enables all of the needed Hypervisor cmdlets
+. "$SCRIPTDIR\..\..\Hypervisor-cmdlets\$hypervisor_Type\hypervisor-cmdlets.ps1"
+. "$SCRIPTDIR\..\workflow_utilities\workflow-cmdlets.ps1"
 
 #=======================================================================================
 # User Arguments
 #=======================================================================================
-
-$testName=$args[0]
-$vmName=$args[1]
-$SUTname=$args[2]
-$testCase=$args[3]
-$Testcase_Id=$args[4]
-$vmName = $SUTname
-# Defaults
-$LogFile = "c:\share\SutResults\$testName\$SUTname\agent.log"
 $MAXWAITSECS = 60 * 3
 $TOOLSWAIT = 60 * 6
 $VCcenterCONN = $Null
 $AgentStatus = $true
 
 #=======================================================================================
-# Belay Device
-#=======================================================================================
 
 ####################################
-# Start Of SUT Configuration
+# Start Of Test case Execution
 ####################################
 
 # Echo a line about starting the test
-writeLog("Starting Testcase ${testCase} for test: ${testName} on Template VM : ${vmName}")
-writeLog("The SUTname for this test is : ${SUTname}")
-writeLog("The Template_VM used for this test is ${TemplateName}")
+writeLog("Starting Testcase ID ${testcase_ID} for test: ${testName} on SUT: ${vmName}")
 
-#Function to Grab the Template username and password
-$query = "select * from template_vm_information where Easy_Name like '$TemplateName'"
-$TemplateVMData = @(RunSQLCommand $query)
-$VMUN = $TemplateVMData.OS_Username
-$VMPW = $TemplateVMData.OS_Password
-$OS_Type = $TemplateVMData.OS_Type
-writeLog("Template UN is : $VMUN")
-writeLog("Template PW is : $VMPW")
-writeLog("Template OS_Type is : $OS_Type")
+#=======================================================================================
+# Get All the SUT related items needed to run the workflow
+$query = "select sut.ID,
+			sut.Name,
+			sut.Test_Suite_ID,
+			sut.VM_Template_ID,
+			sut.Hypervisor_Type_ID,
+			sut.Hypervisor_ID,
+			sut.SUT_Type_ID,
+			sut.date_modified,
+			ts.Name as TestName,
+			vt.Ref_Name,
+			vt.OS_Type,
+			vt.OS_User_Name,
+			vt.OS_User_PWD,
+			ht.Name as Hypervisor_Type,
+			h.IP_Address as Hypervisor_IP,
+            h.Username,
+            h.Password,
+            h.version,
+            h.Mgmt_IP,
+            h.Datacenter,
+            h.Datastore,
+			st.Name as SUT_Type
+		from SUTs sut
+		join TEST_SUITES ts on sut.Test_Suite_ID=ts.ID
+		join VM_TEMPLATES vt on sut.VM_Template_ID=vt.ID
+		join HYPERVISOR_TYPES ht on sut.Hypervisor_Type_ID=ht.ID
+		join HYPERVISORS h on sut.Hypervisor_ID=h.ID
+		join SUT_TYPE st on sut.SUT_Type_ID=st.ID
+        where sut.ID like $SUT_ID;"
+$sutData = @(RunSQLCommand $query)
+$testname = $sutData.testname
+$hyp_IP = $sutData.Hypervisor_IP
+$hyp_UN = $sutData.Username
+$hyp_PW = $sutData.Password
+$hyp_MGR = $sutData.Mgmt_IP
+$DATACENTER = $sutData.Datacenter
+$DATASTORE = $sutData.Datastore
+$hypVersion = $sutData.version
+$hypervisor_Type = $sutData.Hypervisor_Type
+$templateName = $sutData.Ref_Name
+$OS_Type = $sutData.OS_Type
+$hypervisor_Id = $sutData.Hypervisor_ID
+$VM_Template_ID = $sutData.VM_Template_ID
+$VMUN = $sutData.OS_User_Name
+$VMPW = $sutData.OS_User_PWD
 
-# Start a loop that we can break out of if needed
-if ($AgentStatus = $true) {
-	# Connect to the Vcenter or server
+#=======================================================================================
+####################################
+# Start Test Case 
+####################################
+# Connect to the Vcenter or server
+if ($hypervisor_Type -eq "vSphere"){
 	writeLog("ConnectVcenter is attaching to vcenter ${Vcenter}.")
 	if(! $DEVICECONN -and ! ($DEVICECONN = ConnectVcenter)) {
 		writeLog("ConnectVcenter ${Vcenter} Failed.")
@@ -68,119 +103,113 @@ if ($AgentStatus = $true) {
 		return $AgentStatus
 		Break
 	}
-	
-	####################################
-	# Start Test Case 
-	####################################
-	
-	# Revert to a Snapshot named PostProvision
-	writeLog("RevertSnapshot is reverting to a PostProvision Snapshot of the SUT")
-	if (! (RevertSnapshot $vmName $MAXWAITSECS)) {
-		writeLog("${vmName} failed to Revert Snapshot.")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
-	}
-	
-	# wait 3 seconds
-	writeLog ("Pausing 3 seconds")
-	pause 3
-	
-	# Wait for VMtools to start
-	if ($OS_Type -ne "Android") {
-		#Android does not currently work with vmtools
-		writeLog("WaitForTools. Waiting no more than ${TOOLSWAIT} seconds.")
-		if(! (WaitForTools $vmName $TOOLSWAIT)) {
-			writeLog("${vmName} WaitForTools Failed. VMTools failed to respond. ")
-			$AgentStatus = $False
-			return $AgentStatus
-			Break
-		}
-	}
-	
-	# wait 3 seconds
-	writeLog ("Pausing 3 seconds")
-	pause 3
-	
-	writeLog("Starting ${testCase}")
-	#run test case batch script
-	writeLog ("Running execute_testcase script for ${testCase} with SubScript: ${testcase_script}")
-	#Determine OS_Type to run OS specific command
-	if ($OS_Type -eq "Windows") {
-		$Echo = Invoke-VMScript -ScriptText "c:\device\execute_testcase.bat $testName $vmName $testCase $testcase_script" -VM $vmName -GuestUser $VMUN -GuestPassword $VMPW -ScriptType Bat -ErrorAction SilentlyContinue
-		if ($Echo.ExitCode -ne 0) {
-			writeLog("${vmName} Invoke-VMScript Failed. ${testcase_script} failed to run. ")
-			$AgentStatus = $False
-			return $AgentStatus
-			Break
-		}
-	} Elseif ($OS_Type -eq "Linux"){
-		#Perform the Linux equivalent
-		# wait 30 seconds
-		writeLog ("Pausing 30 seconds for linux vmtools to restart")
-		pause 30
-		#Invoke-VMScript -ScriptText "/bin/bash /device/execute_testcase.sh $testName $vmname $testCase $testcase_script" -VM $vmname -GuestUser $VMUN -GuestPassword $VMPW -ErrorAction SilentlyContinue
-		if (! (Invoke-VMScript -ScriptText "/bin/bash /device/execute_testcase.sh $testName $vmname $testCase $testcase_script" -VM $vmname -GuestUser $VMUN -GuestPassword $VMPW -ErrorAction SilentlyContinue)) {
-			writeLog("The testcase $testcase_script script failed to run")
-			$AgentStatus = $False
-			return $AgentStatus
-			break
-		}
-	} Elseif ($OS_Type -eq "Android") {
-		#Start the ADB Testcase script
-		if (! (. "C:\Belay-Device-Code\sut-scripts\ANDROID\$testcase_script" $testname $vmName $SUTname $testcase)) {
-			writeLog("The testcase $testcase_script script failed to run")
-			$AgentStatus = $False
-			return $AgentStatus
-			break
-		}
-	} Else {
-		#No OP
-		WriteLog("No OS_Type-($OS_Type) was found to execute the testcase")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
-	}
-	writeLog("End of ${testCase}")
-	
-	# wait 3 seconds
-	writeLog ("Pausing 3 seconds")
-	pause 3
+}
 
-	# Determine Pass/Fail by searching for a result string in the Test's device.log file.
-	$filename = "c:\share\SutResults\${testName}\${vmName}\${testcase_name}\device.log"
-	$SearchString = "TEST_PASSED"
-	$Sel = select-string -pattern $SearchString -path $FileName
-	If ($Sel -ne $null) {
-		$query = "update test_cases set Testcase_Status='Complete', Testcase_Result='PASS' where SUT_Name = '$vmName' and Testcase_name = '$testcase_name'"
-		RunSQLCommand $query
-		writeLog("The testcase has Passed, We found the correct string in device.log")
-	} Else {
-		$SearchString = "TEST_FAILED"
-		$Sel = select-string -pattern $SearchString -path $FileName
-		If ($Sel -ne $null) {
-			$query = "update test_cases set Testcase_Status='Complete', Testcase_Result='FAIL' where SUT_Name = '$vmName' and Testcase_name = '$testcase_name'"
-			RunSQLCommand $query
-			writeLog("The Testcase has Failed, We did not find the correct string in device.log")
-		} Else {
-			$SearchString = "CRITICAL"
-			$Sel = select-string -pattern $SearchString -path $FileName
-			If ($Sel -ne $null) {
-				$query = "update test_cases set Testcase_Status='Complete', Testcase_Result='CRITICAL' where SUT_Name = '$vmName' and Testcase_name = '$testcase_name'"
-				RunSQLCommand $query
-				writeLog("The Testcase is Critical, we found the Critical string in device.log")
-			} Else {
-				$query = "update test_cases set Testcase_Status='Complete', Testcase_Result='unknown' where SUT_Name = '$vmName' and Testcase_name = '$testcase_name'"
-				RunSQLCommand $query
-				writeLog("The testcase is unknown, We found no strings in device.log")
+# Revert to a Snapshot named PostProvision
+writeLog("RevertSnapshot is reverting to a PostProvision Snapshot of the SUT")
+if (! (RevertSnapshot $vmName $MAXWAITSECS)) {
+	writeLog("${vmName} failed to Revert Snapshot.")
+	$AgentStatus = $False
+	return $AgentStatus
+	Break
+}
+
+# wait 3 seconds
+writeLog ("Pausing 3 seconds")
+pause 3
+
+# Get Testcase script information
+$query = "select * from test_case_scripts where Test_Case_ID like $testcase_ID order by Order_Index"
+$testcasescriptdata = @(RunSQLCommand $query)
+$counter = 0
+# create a loop to iterate through each of the testcases scripts.
+do {
+	if ($AgentStatus = $true) {
+		##########################################
+		# Run User specified Configuration Scripts
+		##########################################
+		$TestcaseScript_ID = $testcasescriptdata[$counter].ID
+		$Script_Path = $testcasescriptdata[$counter].Script_Path
+		$Order_Index = $testcasescriptdata[$counter].Order_Index
+
+		# Connect to the Vcenter or server
+		if ($hypervisor_Type -eq "vSphere"){
+			writeLog("ConnectVcenter is attaching to vcenter ${Vcenter}.")
+			if(! $DEVICECONN -and ! ($DEVICECONN = ConnectVcenter)) {
+				writeLog("ConnectVcenter ${Vcenter} Failed.")
+				$AgentStatus = $False
+				return $AgentStatus
+				Break
 			}
 		}
+		# wait 3 seconds
+		writeLog ("Pausing 3 seconds")
+		pause 3
+
+		# Wait for VMtools to start
+		if ($OS_Type -ne "Android") {
+			#Android does not currently work with vmtools
+			writeLog("WaitForTools. Waiting no more than ${TOOLSWAIT} seconds.")
+			if(! (WaitForTools $vmName $TOOLSWAIT)) {
+				writeLog("${vmName} WaitForTools Failed. VMTools failed to respond. ")
+				$AgentStatus = $False
+				return $AgentStatus
+				Break
+			}
+		}
+
+		# Run Testcase script
+		writeLog ("Running $Script_Path")
+		#Determine OS_Type to run OS specific command
+		if (! (ExecuteSUTScript $vmName, $VMUN, $VMPW, $Script_Path)) {
+			writeLog("${vmName} Running the specified Script $Script_Path Failed.")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}	
+
 	}
-	# Add Logfile paths to the Database
-	writeLog("Add Logfile paths to the Database")
-	AddSUTLogFilesToDB $Testcase_Id $testName $vmName $testcase_name
+	$counter++
+} while ($counter -lt $testcasescriptdata.count)
+
+# wait 3 seconds
+writeLog ("Pausing 3 seconds")
+pause 3
+
+# Determine Pass/Fail by searching for a result string in the Test's result.log file.
+$filename = "c:\share\SutResults\${testName}\${vmName}\${testcase_name}\result.log"
+$SearchString = "TEST_PASSED"
+$Sel = select-string -pattern $SearchString -path $FileName
+If ($Sel -ne $null) {
+	$query = "update test_cases set Status_ID='9', Result_ID='1' where ID like $testcase_ID"
+	RunSQLCommand $query
+	writeLog("The testcase has Passed, We found the correct string in result.log")
+} Else {
+	$SearchString = "TEST_FAILED"
+	$Sel = select-string -pattern $SearchString -path $FileName
+	If ($Sel -ne $null) {
+		$query = "update test_cases set Status_ID='9', Result_ID='2' where ID like $testcase_ID"
+		RunSQLCommand $query
+		writeLog("The Testcase has Failed, We did not find the correct string in result.log")
+	} Else {
+		$SearchString = "CRITICAL"
+		$Sel = select-string -pattern $SearchString -path $FileName
+		If ($Sel -ne $null) {
+			$query = "update test_cases set Status_ID='9', Result_ID='3' where ID like $testcase_ID"
+			RunSQLCommand $query
+			writeLog("The Testcase is Critical, we found the Critical string in result.log")
+		} Else {
+			$query = "update test_cases set Status_ID='9', Result_ID='6' where ID like $testcase_ID"
+			RunSQLCommand $query
+			writeLog("The testcase is unknown, We found no strings in result.log")
+		}
+	}
 }
-writeLog("DestroySUT Agent status is ${AgentStatus}")
+# Add Logfile paths to the Database
+writeLog("Add Logfile paths to the Database")
+AddSUTLogFilesToDB $Testcase_Id $testName $vmName $testcase_name
+
+writeLog("TestCaseExecution Agent status is ${AgentStatus}")
 return $AgentStatus
 ####################################
 # End of Test Case 

@@ -33,7 +33,6 @@ write-host "$SharedDrive"
 
 #=======================================================================================
 # Mark the SUT as Running and Begin test.
-writeLog("Setting the SUT to 'Running' in the DB")
 $query = "update suts set Status_ID='8' where ID = '$SUT_ID'"
 RunSQLCommand $query
 
@@ -61,7 +60,12 @@ $sutData = @(RunSQLCommand $query)
 $testname = $sutData.testname
 $hypervisor_Type = $sutData.Hypervisor_Type
 $templateName = $sutData.Ref_Name
-
+#=======================================================================================
+# Create the Result directory for the SUTname
+New-Item "$SharedDrive\SutResults\$testName\$sutName" -type directory
+# Create the SUT-Workflow log file
+$LogFile = "$SharedDrive\SutResults\$testName\$sutName\workflow.log"
+#=======================================================================================
 writeLog("Information the Agent needs to run the test")
 writeLog("----------------------")
 writeLog("SUT_ID: $sut_ID")
@@ -71,10 +75,6 @@ writeLog("hypervisor Type: $hypervisor_Type")
 writeLog("templateName: $templateName")
 writeLog("----------------------")
 #=======================================================================================
-# Create the Result directory for the SUTname
-New-Item "$SharedDrive\SutResults\$testName\$sutName" -type directory
-# Create the SUT-Workflow log file
-$LogFile = "$SharedDrive\SutResults\$testName\$sutName\workflow.log"
 # Insert Full Agent Logfile Path into DB (SUT_Information)
 $AgentLogPath = $LogFile.Replace('\',"\\")
 writeLog("Writing AgentLog '$AgentLogPath' to the Database")
@@ -85,10 +85,6 @@ RunSQLCommand $query
 # Get all properties for test and write properties.txt file
 writeLog("Starting sub-process to create Properties.txt file")
 . "${SCRIPTDIR}\writeProperties.ps1" $testName $sutName $LogFile $SharedDrive
-
-
-start-sleep 30
-
 
 #=======================================================================================
 # Query Database Testcases table for the SUT, and run each Testcase:
@@ -123,7 +119,7 @@ foreach($row in $testcaseData) {
 		RunSQLCommand $query
 		#Kick off subprocess to Provision SUT
 
-		if (! (. "${SCRIPTDIR}\..\workflow_utilities\provisionSUT.ps1" $testName $SUTname $hypervisor_Type $LogFile)) {
+		if (! (. "${SCRIPTDIR}\..\workflow_utilities\provisionSUT.ps1" $testName $SUTname $hypervisor_Type $LogFile $testcase_ID)) {
 
 			writeLog("Something failed during Provisioning, we should destroy node now.")
 			$query = "update test_cases set Status_ID='9', Result_ID='4' where ID = '$testcase_ID'"
@@ -176,7 +172,7 @@ foreach($row in $testcaseData) {
 		RunSQLCommand $query
 		#Kick off subprocess to Configure SUT and check return code
 
-		if (! (. "${SCRIPTDIR}\..\workflow_utilities\configureSUT.ps1" $testName $vmName $SUTname)) {
+		if (! (. "${SCRIPTDIR}\..\workflow_utilities\configureSUT.ps1" $testName $SUTname $hypervisor_Type $LogFile $testcase_ID)) {
 
 			writeLog("Something failed during configuration, we should destroy the SUT now.")
 			#update the Testcase table (update Configure SUT row, mark it as COMPLETE, fail)
@@ -220,7 +216,7 @@ foreach($row in $testcaseData) {
 		RunSQLCommand $query
 		#Kick off subprocess to Execute_Testcase and get return code
 
-		if (! (. "${SCRIPTDIR}\..\workflow_utilities\testCaseExecutioner.ps1" $testName $vmName $SUTname $testcase_name $Testcase_Id)) {
+		if (! (. "${SCRIPTDIR}\..\workflow_utilities\testCaseExecutioner.ps1" $testName $SUTname $hypervisor_Type $LogFile $Testcase_Id $testcase_name)) {
 
 			writeLog("Something failed during the Testcase, we should destroy node now.")
 			#update the Testcase table (update Provision SUT row, mark it as COMPLETE, fail)
@@ -253,11 +249,11 @@ writeLog("I made it out of the loop Destroying the vm")
 $query = "update test_cases set Status_ID='8' where Name='DestroySUT' and SUT_ID = '$sut_ID'"
 RunSQLCommand $query
 # Update the SUT table (Deactivate Console URL)
-$query = "update suts set Console_Active='0' where SUT_ID = '$sut_ID'"
+$query = "update suts set Console_Active='0' where ID = '$sut_ID'"
 RunSQLCommand $query
 # Kick off subprocess to Destroy_SUT
 
-if (! (. "${SCRIPTDIR}\..\workflow_utilities\destroySUT.ps1" $testName $vmName $SUTname)) {
+if (! (. "${SCRIPTDIR}\..\workflow_utilities\destroySUT.ps1" $testName $SUTname $hypervisor_Type $LogFile)) {
 
 	writeLog("Something failed when destroying the VM, Crap!")
 	#update the Testcase table (update Destroy_SUT row, mark it as COMPLETE, fail)

@@ -9,8 +9,9 @@ writeLog("Root Execution directory is '${SCRIPTDIR}'")
 
 #=======================================================================================
 function enable-vsphere-cli-in-powershell {
-	Add-PSSnapin VMWare.VimAutomation.Core -ErrorAction SilentlyContinue
-	. "C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\Scripts\Initialize-PowerCLIEnvironment.ps1"
+	#Add-PSSnapin VMWare.VimAutomation.Core -ErrorAction SilentlyContinue
+	#. "C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\Scripts\Initialize-PowerCLIEnvironment.ps1"
+	Get-Module -ListAvailable VMware.vimautomation.core | Import-Module
 }
 
 #=======================================================================================
@@ -173,7 +174,7 @@ function GetConsoleUrl($vmName, $hypVersion, $maxWaitTimeInSecs=$MAXWAITSECS) {
 		$VMMoRef = $myVM.ExtensionData.MoRef.Value
 		
 		#Get Vcenter from advanced settings
-		$UUID = ((Connect-VIServer $Vcenter -user $VCenterUN -Password $VCenterPW -ErrorAction SilentlyContinue).InstanceUUID)
+		$UUID = ((Connect-VIServer $Vcenter -user $hyp_UN -Password $hyp_PW -ErrorAction SilentlyContinue).InstanceUUID)
 		$SettingsMgr = Get-View $global:DefaultVIServer.ExtensionData.Client.ServiceContent.Setting
 		$Settings = $SettingsMgr.Setting.GetEnumerator() 
 		$AdvancedSettingsFQDN = ($Settings | Where {$_.Key -eq "VirtualCenter.FQDN" }).Value
@@ -191,7 +192,7 @@ function GetConsoleUrl($vmName, $hypVersion, $maxWaitTimeInSecs=$MAXWAITSECS) {
 	Else {
 		#Create URL and place it in the Database
 		$myVM = Get-VM $vmName
-		$UUID = ((Connect-VIServer $Vcenter -user $VCenterUN -Password $VCenterPW -ErrorAction SilentlyContinue).InstanceUUID).ToUpper()
+		$UUID = ((Connect-VIServer $Vcenter -user $hyp_UN -Password $hyp_PW -ErrorAction SilentlyContinue).InstanceUUID).ToUpper()
 		$MoRef = $myVM.ExtensionData.MoRef.Value
 		$ConsoleLink = "https://${Vcenter}:9443/vsphere-client/vmrc/vmrc.jsp?vm=urn:vmomi:VirtualMachine:${MoRef}:${UUID}"
 		$query = "update sut_information set SUT_RemoteConsoleLink='$ConsoleLink',SUT_Console_Active='TRUE' where SUT_Name = '$SUTname'"
@@ -243,4 +244,65 @@ function GetIPAddress($vmName) {
 	$query = "update sut_information set SUT_IPaddress='$VMIP' where SUT_Name = '$vmName'"
 	RunSQLCommand $query
 	return $True
+}
+
+#=======================================================================================
+function CopyFilestoSUT($vmName, $VMUN, $VMPW) {
+	if ($OS_Type -eq "Windows") {
+		Copy-VMGuestFile -Source "c:\share\SutResults\${testName}\${SUTname}\properties.txt" -Destination "c:\LocalDropbox" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Windows\provisionVM.bat" -Destination "c:\LocalDropbox" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Windows\execute_testcase.bat" -Destination "c:\LocalDropbox" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Windows\connectShare.bat" -Destination "c:\LocalDropbox" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Windows\copyScripts.bat" -Destination "c:\LocalDropbox" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
+		return $true
+	} Elseif ($OS_Type -eq "Linux") {
+		Copy-VMGuestFile -Source "c:\share\SutResults\${testName}\${SUTname}\properties.txt" -Destination "/LocalDropbox/properties.txt" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Linux\provisionVM.sh" -Destination "/LocalDropbox/provisionVM.sh" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Linux\execute_testcase.sh" -Destination "/LocalDropbox/execute_testcase.sh" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Linux\connectShare.sh" -Destination "/LocalDropbox/connectShare.sh" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+		Copy-VMGuestFile -Source "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Linux\copyScripts.sh" -Destination "/LocalDropbox/copyScripts.sh" -LocalToGuest -vm $vmname -GuestUser $VMUN -GuestPassword $VMPW
+		return $true
+	} Elseif ($OS_Type -eq "Android") {
+		# No files to copy for ADB, command run on the agent via ADB
+		writeLog("No files were copied for Android")
+		return $true
+	} Else {
+		#No OP
+		WriteLog("No OS_Type-($OS_Type) was found to copy the files")
+		return $false
+	}	
+}
+
+#=======================================================================================
+function ExecuteSUTScript(){
+	if ($OS_Type -eq "Windows") {
+		$Echo = Invoke-VMScript -ScriptText "c:\LocalDropbox\$Script_Path $testName $vmName" -VM $vmName -GuestUser $VMUN -GuestPassword $VMPW -ScriptType Bat -ErrorAction SilentlyContinue
+		if ($Echo.ExitCode -ne 0) {
+			writeLog("${vmName} Invoke-VMScript Failed. $Script_Path failed to run. ")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+	} ElseIf ($OS_Type -eq "Linux") {
+		#Perform the Linux equivalent
+		$Echo = Invoke-VMScript -ScriptText "/bin/bash /LocalDropbox/$Script_Path $testName $vmname" -VM $vmname -GuestUser $VMUN -GuestPassword $VMPW -ErrorAction SilentlyContinue
+		if ($Echo.ExitCode -ne 0) {
+			writeLog("${vmName} Invoke-VMScript Failed. $Script_Path failed to run. ")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+	} Elseif ($OS_Type -eq "Android") {
+		#Start the ADB Provision script
+		if (! (. "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Android\$Script_Path" $testname $vmName $SUTname)) {
+			writeLog("The provision1 script: $Script_Path failed to run")
+			$AgentStatus = $False
+			return $AgentStatus
+			break
+		}
+	} Else {
+		WriteLog("No OS_Type-($OS_Type) was found to execute the script")
+		$AgentStatus = $False
+		return $AgentStatus
+	}
 }

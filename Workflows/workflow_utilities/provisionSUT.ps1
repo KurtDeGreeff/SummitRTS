@@ -32,6 +32,7 @@ writeLog("Starting Configure_SUT for test: ${testName}")
 writeLog("The SUTname for this test is : ${SUTname}")
 writeLog("The Hyervisor_type used for this test is ${hypervisor_Type}")
 
+#=======================================================================================
 # Get All the SUT related items needed to run the workflow
 $query = "select sut.ID,
 			sut.Name,
