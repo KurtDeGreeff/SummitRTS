@@ -28,7 +28,7 @@ function GetTimestamp{
 }
 
 #=======================================================================================
-function deviceLog($Msg, [switch] $Quiet=$False, [switch] $Q=$False) {
+function androidLog($Msg, [switch] $Quiet=$False, [switch] $Q=$False) {
 
 	if($Q) {$Quiet = $Q}
 	
@@ -37,5 +37,5 @@ function deviceLog($Msg, [switch] $Quiet=$False, [switch] $Q=$False) {
 		Write-Host ""
 		Write-Host "${dateNow} $Msg"
 	}
-	Write-Output "$dateNow $Msg" | Out-File $deviceLogFile -append -encoding ASCII
+	Write-Output "$dateNow $Msg" | Out-File $androidLogFile -append -encoding ASCII
 }

@@ -1,5 +1,5 @@
 REM This script Forces BrowseToUrl to use the .exe described below
-set logfile=c:\device\device.log
+set logfile=c:\LocalDropbox\result.log
 REM Find path to exe
 cd c:\
 
@@ -8,14 +8,14 @@ echo -------- Starting Browsing Script ------- >> %logfile%
 goto :MAIN
 
 :FindBrowserExe
-dir /s /b C:"chrome.exe" >> c:\device\mybrowser.txt 2>>&1
+dir /s /b C:"chrome.exe" >> c:\LocalDropbox\mybrowser.txt 2>>&1
 REM Set Variable to .exe path
-set /p mybrowserpath= <c:\device\mybrowser.txt
+set /p mybrowserpath= <c:\LocalDropbox\mybrowser.txt
 goto :EOF
 
 :setURL
-REM get the url from txt file in c:\device
-set /p myurl= <c:\device\browse\url.txt
+REM get the url from txt file in c:\LocalDropbox
+set /p myurl= <c:\LocalDropbox\browse\url.txt
 echo %mybrowserpath% >> %logfile% 2>>&1
 echo %myurl% >> %logfile% 2>>&1
 goto :EOF
@@ -41,9 +41,9 @@ goto :EOF
 
 :ver_Win7
 echo OS is Win 7 >> %logfile% 2>>&1
-start c:\device\psexec.exe -s -i 1 "%mybrowserpath%" --new-window %myurl% /accepteula
+start c:\LocalDropbox\psexec.exe -s -i 1 "%mybrowserpath%" --new-window %myurl% /accepteula
 timeout 60
-start c:\device\psexec.exe -s -i 1 "%mybrowserpath%" --new-window %myurl% /accepteula
+start c:\LocalDropbox\psexec.exe -s -i 1 "%mybrowserpath%" --new-window %myurl% /accepteula
 timeout 60
 goto :EOF
 

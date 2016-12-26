@@ -1,5 +1,5 @@
 #!/bin/bash
-logfile=/device/device.log
+logfile=/LocalDropbox/result.log
 #example for now (this is hardcoded in writeproperties.ps1, so you will see this in properties.txt)
 #$LINUX_SW_COUNT = "2"
 #$LINUX_SW_NAME_1 = "apache"
@@ -9,8 +9,8 @@ logfile=/device/device.log
 
 echo ---------- Beginning to install Software for SUT ---------->> $logfile
 
-#Get the Linux_sw_count from /device/properties.txt
-LINUX_SW_COUNT=`echo $a | sed -n /LINUX_SW_COUNT/p /device/properties.txt | awk '{print $3}'`
+#Get the Linux_sw_count from /LocalDropbox/properties.txt
+LINUX_SW_COUNT=`echo $a | sed -n /LINUX_SW_COUNT/p /LocalDropbox/properties.txt | awk '{print $3}'`
 #read the file!
 echo Installing $LINUX_SW_COUNT Software packages to this SUT >> $logfile
 
@@ -21,10 +21,10 @@ echo Installing $LINUX_SW_COUNT Software packages to this SUT >> $logfile
 #and install the software
 #if latest, just do a yum install
 #if the version is not latest, good luck! 
-LINUX_SW_NAME_1=`echo $a | sed -n /LINUX_SW_NAME_1/p /device/properties.txt | awk '{print $3}'`
-LINUX_SW_VER_1=`echo $a | sed -n /LINUX_SW_VER_1/p /device/properties.txt | awk '{print $3}'`
+LINUX_SW_NAME_1=`echo $a | sed -n /LINUX_SW_NAME_1/p /LocalDropbox/properties.txt | awk '{print $3}'`
+LINUX_SW_VER_1=`echo $a | sed -n /LINUX_SW_VER_1/p /LocalDropbox/properties.txt | awk '{print $3}'`
 echo Installing Software: $LINUX_SW_NAME_1 and Version:$LINUX_SW_VER_1 to this SUT >>$logfile
-. /device/Software/$LINUX_SW_NAME_1/install.sh $LINUX_SW_VER_1
+. /LocalDropbox/Software/$LINUX_SW_NAME_1/install.sh $LINUX_SW_VER_1
 
 #exit
 echo ---------- Finished installing Software for SUT ---------->> $logfile

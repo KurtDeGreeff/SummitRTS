@@ -3,7 +3,7 @@
 # This script will:
 # 
 # Perform the coinflip test
-logfile=/device/device.log
+logfile=/LocalDropbox/result.log
 
 echo ---------- Beginning testcase script ---------->> $logfile
 

@@ -2,7 +2,7 @@
 
 python_exe=`which python`
 python_code="./coinflip.py"
-logfile=/device/device.log
+logfile=/LocalDropbox/result.log
 
 if [ -e ${python_code} ]; then
     ${python_exe} ${python_code} ${logfile}

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-logfile=/device/device.log
+logfile=/LocalDropbox/result.log
 version=$1
 echo ----- Installing Apache version: $version ----- >>$logfile
 

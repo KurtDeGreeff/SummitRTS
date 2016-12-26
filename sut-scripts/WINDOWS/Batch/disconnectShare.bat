@@ -3,13 +3,13 @@ REM set some variables
 @echo on
 set exedir=%~dp0
 cd %exedir%
-set logfile=c:\device\device.log
+set logfile=c:\LocalDropbox\result.log
 
 goto :MAIN
 
 :disconnectShare
 echo --------------------------------------------- >> %logfile% 2>>&1
-echo Disconnecting Device Shared Drives >> %logfile% 2>>&1
+echo Disconnecting Shared Drives >> %logfile% 2>>&1
 REM Map Drive with user Credentials
 net use * /Delete /y
 goto :EOF

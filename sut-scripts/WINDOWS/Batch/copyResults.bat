@@ -1,7 +1,7 @@
 @echo on
 set exedir=%~dp0
 cd %exedir%
-set logfile=c:\device\device.log
+set logfile=c:\LocalDropbox\result.log
 set testName=%1
 set vmname=%2
 set testcase=%3
@@ -18,9 +18,9 @@ goto :EOF
 rem copy directory
 set myresultsdir= x:\SutResults\%testName%\%vmname%\%testcase%
 echo Results Directory %myresultsdir% >> %logfile%
-echo d | xcopy c:\device\*.log %myresultsdir% /i /y
-echo d | xcopy c:\device\*.jpg %myresultsdir% /i /y
-echo d | xcopy c:\device\*.png %myresultsdir% /i /y
+echo d | xcopy c:\LocalDropbox\*.log %myresultsdir% /i /y
+echo d | xcopy c:\LocalDropbox\*.jpg %myresultsdir% /i /y
+echo d | xcopy c:\LocalDropbox\*.png %myresultsdir% /i /y
 goto :EOF
 
 :SHARE_ERROR

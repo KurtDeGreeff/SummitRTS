@@ -1,6 +1,5 @@
 #=======================================================================================
-# Author: Justin Sider
-# Purpose: Cmdlets for Powershell to run Device agent
+# Purpose: Cmdlets for Powershell to run an agent
 #=======================================================================================
 
 #=======================================================================================
@@ -10,7 +9,7 @@
 set-ExecutionPolicy Bypass
 
 # Enables all of the needed cmdlets
-. "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Android\android-cmdlets.ps1"
+. "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Android\android-cmdlets.ps1"
 
 $testName=$args[0]
 $vmName=$args[1]
@@ -18,11 +17,11 @@ $SUTname=$args[2]
 $testCase=$args[3]
 #create a testcase folder
 New-Item c:\share\SutResults\$testName\$SUTname\$testcase -type directory
-#Create a device.log
-$deviceLogFile = "c:\share\SutResults\$testName\$SUTname\$testcase\device.log"
-deviceLog("Starting Testcase: $testcase of Android Device TestName: $TestName, SUTName:$SUTname")
+#Create a result.log
+$deviceLogFile = "c:\share\SutResults\$testName\$SUTname\$testcase\result.log"
+deviceLog("Starting Testcase: $testcase of Android TestName: $TestName, SUTName:$SUTname")
 #setup the adb command
-$adb = "C:\Belay-Device-Code\agent-scripts\Agent_Support_Tools\Android\adb.exe"
+$adb = "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Android\adb.exe"
 pause 5
 deviceLog("Killing any adb services")
 . $adb kill-server

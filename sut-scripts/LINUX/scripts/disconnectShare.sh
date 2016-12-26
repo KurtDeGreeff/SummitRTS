@@ -3,7 +3,7 @@
 # This script will:
 # 
 # disconnect from the results share
-logfile=/device/device.log
+logfile=/LocalDropbox/result.log
 
 echo ---------- Starting to Disconnect Mountpoint ---------->> $logfile
 
