@@ -59,7 +59,7 @@ if (!empty($_GET['sut_id'])) {
 				echo '<td><img src="img/noconsole.png"></td>';
 			}
 			echo '<td>'. $row['SUT_name'] .'</td>';
-			echo '<td><form action="singlelog.php" method="get"><input type="hidden" name="Log_File_Path" value='.$row['Agent_Log'].'><input type="submit" class="btn btn-info" value="View Log"></form></td>';
+			echo '<td><form action="singleLogByName.php" method="get"><input type="hidden" name="Log_File" value='.$row['Agent_Log'].'><input type="submit" class="btn btn-info" value="View Log"></form></td>';
 			echo '</tr>';
 			?>
 		</table>
