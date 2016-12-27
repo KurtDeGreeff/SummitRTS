@@ -4,7 +4,7 @@ rem This script will copy Scripts/files to the SUT
 @echo on
 set exedir=%~dp0
 cd %exedir%
-set logfile=c:\device\device.log
+set logfile=c:\LocalDropbox\result.log
 
 echo ------------- Starting to Copy Scripts to Target ------------- >> %logfile% 
 
@@ -18,7 +18,7 @@ goto :EOF
 REM This Function will copy the Test files, Software, etc. to the target
 IF NOT EXIST x:\ goto SHARE_ERROR
 echo Starting to move Target scripts to the VM >> %logfile% 
-xcopy x:\sut-scripts\WINDOWS c:\device\ /s /e /y
+xcopy x:\sut-scripts\WINDOWS c:\LocalDropbox\ /s /e /y
 echo Finished moving scripts to Target >> %logfile%
 goto :EOF
 

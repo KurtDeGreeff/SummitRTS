@@ -29,7 +29,7 @@ function ConnectVcenter($Tvcenter=$vCenter, $User=$hyp_UN, $Pass=$hyp_PW) {
 	$Tvcenter = SetVCenter $Tvcenter
 	
 	$DEVICECONN = (Connect-VIServer $Tvcenter -user $User -Password $Pass -ErrorAction SilentlyContinue)
-	
+
 	return $DEVICECONN
 }
 
@@ -185,7 +185,7 @@ function GetConsoleUrl($vmName, $hypVersion, $maxWaitTimeInSecs=$MAXWAITSECS) {
 		
 		#Create URL and place it in the Database
 		$ConsoleLink = "https://$($Vcenter):$($ConsolePort)/vsphere-client/webconsole.html?vmId=$($VMMoRef)&vmName=$($myVM.Name)&serverGuid=${UUID}&host=$($AdvancedSettingsFQDN)&sessionTicket=$($Session)&thumbprint=5A:AB:D4:75:29:E8:D5:94:09:8F:D2:91:CF:DC:AB:C0:69:03:37:42"	
-		$query = "update sut_information set SUT_RemoteConsoleLink='$ConsoleLink',SUT_Console_Active='TRUE' where SUT_Name = '$SUTname'"
+		$query = "update suts set remote_Console_URL='$ConsoleLink',Console_Active='1' where Name = '$SUTname'"
 		RunSQLCommand $query
 		return $True
 	}
@@ -195,7 +195,7 @@ function GetConsoleUrl($vmName, $hypVersion, $maxWaitTimeInSecs=$MAXWAITSECS) {
 		$UUID = ((Connect-VIServer $Vcenter -user $hyp_UN -Password $hyp_PW -ErrorAction SilentlyContinue).InstanceUUID).ToUpper()
 		$MoRef = $myVM.ExtensionData.MoRef.Value
 		$ConsoleLink = "https://${Vcenter}:9443/vsphere-client/vmrc/vmrc.jsp?vm=urn:vmomi:VirtualMachine:${MoRef}:${UUID}"
-		$query = "update sut_information set SUT_RemoteConsoleLink='$ConsoleLink',SUT_Console_Active='TRUE' where SUT_Name = '$SUTname'"
+		$query = "update suts set remote_Console_URL='$ConsoleLink',Console_Active='1' where Name = '$SUTname'"
 		RunSQLCommand $query
 		return $True
 	}
@@ -241,13 +241,14 @@ function GetIPAddress($vmName) {
 	$vmIPdata = (Get-View -Viewtype VirtualMachine -Property Name, Guest.Net | where-object {$_.Name -eq "$vmName"} | Select @{n="IPAddr"; e={($_.Guest.Net | %{$_.IpAddress} ) }})
 	$VMIP = $vmIPdata.IPAddr
 	writeLog("Adding IP: $VMIP to DB for SUT $vmName")
-	$query = "update sut_information set SUT_IPaddress='$VMIP' where SUT_Name = '$vmName'"
+	$query = "update suts set IP_Address='$VMIP' where Name = '$vmName'"
 	RunSQLCommand $query
 	return $True
 }
 
 #=======================================================================================
-function CopyFilestoSUT($vmName, $VMUN, $VMPW) {
+function CopyFilestoSUT {
+	writeLog("Copying files to $vmName")
 	if ($OS_Type -eq "Windows") {
 		Copy-VMGuestFile -Source "c:\share\SutResults\${testName}\${SUTname}\properties.txt" -Destination "c:\LocalDropbox" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
 		Copy-VMGuestFile -Source "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Windows\provisionVM.bat" -Destination "c:\LocalDropbox" -LocalToGuest -vm $vmName -GuestUser $VMUN -GuestPassword $VMPW
@@ -274,8 +275,46 @@ function CopyFilestoSUT($vmName, $VMUN, $VMPW) {
 }
 
 #=======================================================================================
-function ExecuteSUTScript(){
+function ExecuteSUTScript {
 	if ($OS_Type -eq "Windows") {
+		writeLog("Running Windows Script: $Script_Path")
+		$Echo = Invoke-VMScript -ScriptText "c:\LocalDropbox\execute_testcase.bat $testName $vmName $testcase_name $Script_Path" -VM $vmName -GuestUser $VMUN -GuestPassword $VMPW -ScriptType Bat -ErrorAction SilentlyContinue
+		if ($Echo.ExitCode -ne 0) {
+			writeLog("${vmName} Invoke-VMScript Failed. $Script_Path failed to run. ")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+	} ElseIf ($OS_Type -eq "Linux") {
+		#Perform the Linux equivalent
+		$Echo = Invoke-VMScript -ScriptText "/bin/bash /LocalDropbox/execute_testcase.sh $testName $vmname $testcase_name $Script_Path" -VM $vmname -GuestUser $VMUN -GuestPassword $VMPW -ErrorAction SilentlyContinue
+		if ($Echo.ExitCode -ne 0) {
+			writeLog("${vmName} Invoke-VMScript Failed. $Script_Path failed to run. ")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+	} Elseif ($OS_Type -eq "Android") {
+		#Start the ADB Provision script
+		if (! (. "C:\OPEN_PROJECTS\SummitRTS\Workflows\workflow_utilities\Android\$Script_Path" $testname $vmName $SUTname)) {
+			writeLog("The provision1 script: $Script_Path failed to run")
+			$AgentStatus = $False
+			return $AgentStatus
+			break
+		}
+	} Else {
+		WriteLog("No OS_Type-($OS_Type) was found to execute the script")
+		$AgentStatus = $False
+		return $AgentStatus
+	}
+	writeLog("The script is complete!")
+	return $true
+}
+
+#=======================================================================================
+function ExecuteSUTProvisionScript {
+	if ($OS_Type -eq "Windows") {
+		writeLog("Running Windows Script: $Script_Path")
 		$Echo = Invoke-VMScript -ScriptText "c:\LocalDropbox\$Script_Path $testName $vmName" -VM $vmName -GuestUser $VMUN -GuestPassword $VMPW -ScriptType Bat -ErrorAction SilentlyContinue
 		if ($Echo.ExitCode -ne 0) {
 			writeLog("${vmName} Invoke-VMScript Failed. $Script_Path failed to run. ")
@@ -305,4 +344,6 @@ function ExecuteSUTScript(){
 		$AgentStatus = $False
 		return $AgentStatus
 	}
+	writeLog("The script is complete!")
+	return $true
 }

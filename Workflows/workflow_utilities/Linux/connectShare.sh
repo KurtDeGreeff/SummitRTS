@@ -1,15 +1,15 @@
 #!/bin/bash
 # This Script will mount a Cifs share
 #set the variables
-logfile=/device/device.log
+logfile=/LocalDropbox/result.log
 
 echo ---------- Starting to Connect Mountpoint: $stage to SUT ---------->> $logfile
-#read /device/properties.txt
+#read /LocalDropbox/properties.txt
 #set variables based on what you find!
-LINUX_SHARE_USER=`echo $a | sed -n /LINUX_SHARE_USER/p /device/properties.txt | awk '{print $3}'`
-LINUX_SHARE_PASS=`echo $a | sed -n /LINUX_SHARE_PASS/p /device/properties.txt | awk '{print $3}'`
-LINUX_RESULTS_SHARE=`echo $a | sed -n /LINUX_RESULTS_SHARE/p /device/properties.txt | awk '{print $3}'`
-LINUX_SHARED_DRIVE=`echo $a | sed -n /LINUX_SHARED_DRIVE/p /device/properties.txt | awk '{print $3}'`
+LINUX_SHARE_USER=`echo $a | sed -n /LINUX_SHARE_USER/p /LocalDropbox/properties.txt | awk '{print $3}'`
+LINUX_SHARE_PASS=`echo $a | sed -n /LINUX_SHARE_PASS/p /LocalDropbox/properties.txt | awk '{print $3}'`
+LINUX_RESULTS_SHARE=`echo $a | sed -n /LINUX_RESULTS_SHARE/p /LocalDropbox/properties.txt | awk '{print $3}'`
+LINUX_SHARED_DRIVE=`echo $a | sed -n /LINUX_SHARED_DRIVE/p /LocalDropbox/properties.txt | awk '{print $3}'`
 
 echo LINUX_SHARE_USER : $LINUX_SHARE_USER>>$logfile
 echo LINUX_SHARE_PASS : $LINUX_SHARE_PASS>>$logfile

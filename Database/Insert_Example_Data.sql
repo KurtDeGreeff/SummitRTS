@@ -28,7 +28,7 @@ INSERT INTO QUEUE_MANAGER (Status_ID, Wait, Log_File)
 VALUES (1,60,'c:\\SummitRTS\\Queue_Manager\\Queue_Manager.log');
 
 INSERT INTO RTS_PROPERTIES (Name, Val)
-VALUES ('WIN_SHARE','\\\\192.168.2.68\\dropbox'),('WIN_SHARE_USER','DeviceUser'),('WIN_SHARE_PASS','BelayTech2015'),('WIN_SHARE_SCRIPTS_DIR','\\sut-scripts\\WINDOWS'),('WIN_LOCAL_SCRIPTS_DIR','dropbox'),('WIN_LOGFILE_NAME','rts.log'),('WIN_RESULTS_SHARE','\\\\192.168.2.68\\share'),('LINUX_SHARED_DRIVE','/192.168.2.68/dropbox'),('LINUX_SHARE_USER','DeviceUser'),('LINUX_SHARE_PASS','BelayTech2015'),('LINUX_SHARE_SCRIPTS_DIR','/sut-scripts/LINUX'),('LINUX_LOCAL_SCRIPTS_DIR','/dropbox'),('LINUX_LOGFILE_NAME','rts.log'),('LINUX_RESULTS_SHARE','/192.168.2.68/share');
+VALUES ('WIN_SHARE','\\\\192.168.2.68\\OPEN_PROJECTS\\SummitRTS'),('WIN_SHARE_USER','DeviceUser'),('WIN_SHARE_PASS','BelayTech2015'),('WIN_SHARE_SCRIPTS_DIR','\\sut-scripts\\WINDOWS'),('WIN_LOCAL_SCRIPTS_DIR','LocalDropbox'),('WIN_LOGFILE_NAME','result.log'),('WIN_RESULTS_SHARE','\\\\192.168.2.68\\share'),('LINUX_SHARED_DRIVE','/192.168.2.68/dropbox'),('LINUX_SHARE_USER','DeviceUser'),('LINUX_SHARE_PASS','BelayTech2015'),('LINUX_SHARE_SCRIPTS_DIR','/sut-scripts/LINUX'),('LINUX_LOCAL_SCRIPTS_DIR','/LocalDropbox'),('LINUX_LOGFILE_NAME','result.log'),('LINUX_RESULTS_SHARE','/192.168.2.68/share');
 
 INSERT INTO Software (Manufacturer, Name, Version)
 VALUES ('Google','Chrome','27.0.1'),('Apache','httpd','latest'),('Mozilla','Firefox','27.0.1');
@@ -46,8 +46,8 @@ INSERT INTO HYPERVISOR_TYPES(ID,Name)
 VALUES (1,'vSphere'),(2,'vmwks'),(3,'vBox'),(99,'Placeholder');
 
 INSERT INTO HYPERVISORS (ID, Hypervisor_Type_ID, IP_Address, Username, Password, Version, Mgmt_IP, Datacenter, Datastore, Max_Concurrent_SUTS, Status_ID)
-VALUES (1,1,'192.168.10.55','administrator@vcenter6u1.local','BelayTech2016!','6','192.168.10.105','Device','datastore11',1,12),
-(2,1, '192.168.10.54','root','BelayTech2016','5','192.168.10.86','Device','datastore-1',1,11),
+VALUES (1,1,'192.168.2.10','administrator','VMware1!','6.5','192.168.2.200','DC01','synology',1,11),
+(2,1, '192.168.10.54','root','BelayTech2016','5','192.168.10.86','Device','datastore-1',1,12),
 (3,2,'127.0.0.1','administrator','BelayTech2016','12.0','127.0.0.1','Device','C:\\temp\\WKS',1,11),
 (4,3,'127.0.0.2','administrator','BelayTech2016','5.0.14','127.0.0.2','Device','C:\\temp\\vbox',1,11);
 

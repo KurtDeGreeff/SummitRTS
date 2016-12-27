@@ -19,7 +19,7 @@ $LogFile=$args[3]
 $testcase_ID=$args[4]
 
 $vmName = $SUTname
-$testcase_name = "SUT_Configuration"
+$testcase_name = "configure_SUT"
 
 # Enables all of the needed Hypervisor cmdlets
 . "$SCRIPTDIR\..\..\Hypervisor-cmdlets\$hypervisor_Type\hypervisor-cmdlets.ps1"
@@ -101,10 +101,14 @@ $VMPW = $sutData.OS_User_PWD
 		}
 	}
 
+	# wait 3 seconds
+	writeLog ("Pausing 3 seconds")
+	pause 3
+
 	# Copy the files to the Target vm that will be run from the Host server
-	writeLog ("Copying Specify Files to the VM.")
+	writeLog ("Copying Specify Files to the VM : $vmName")
 	#Determine OS_Type to run OS specific command
-	if (! (CopyFilestoSUT $vmName, $VMUN, $VMPW)) {
+	if (! (CopyFilestoSUT)) {
 		writeLog("${vmName} Copying files to SUT Failed.")
 		$AgentStatus = $False
 		return $AgentStatus
@@ -143,7 +147,7 @@ do {
 		# Run Configuration script
 		writeLog ("Running $Script_Path")
 		#Determine OS_Type to run OS specific command
-		if (! (ExecuteSUTScript $vmName, $VMUN, $VMPW, $Script_Path)) {
+		if (! (ExecuteSUTProvisionScript)) {
 			writeLog("${vmName} Running the specified Script $Script_Path Failed.")
 			$AgentStatus = $False
 			return $AgentStatus

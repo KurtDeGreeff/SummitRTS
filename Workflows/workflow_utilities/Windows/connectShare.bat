@@ -3,7 +3,7 @@ REM set some variables
 @echo off
 set exedir=%~dp0
 cd %exedir%
-set logfile=c:\device\device.log
+set logfile=c:\LocalDropbox\result.log
 set stage=%1
 set count=0
 
@@ -24,11 +24,11 @@ echo No stage was passed in >> %logfile%
 goto error
 
 :Provision
-type c:\device\properties.txt
+type c:\LocalDropbox\properties.txt
 
-for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE :: " "C:\device\properties.txt"') do (set Win_Share=%%b)
-for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE_USER :: " "C:\device\properties.txt"') do (set Win_Share_Username=%%b)
-for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE_PASS :: " "C:\device\properties.txt"') do (set Win_Share_Password=%%b)
+for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE :: " "C:\LocalDropbox\properties.txt"') do (set Win_Share=%%b)
+for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE_USER :: " "C:\LocalDropbox\properties.txt"') do (set Win_Share_Username=%%b)
+for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE_PASS :: " "C:\LocalDropbox\properties.txt"') do (set Win_Share_Password=%%b)
 
 echo The Shared Drive is : %Win_Share% >> %logfile%
 echo The Share Username is : %Win_Share_Username% >> %logfile%
@@ -38,11 +38,11 @@ net use x: %Win_Share% /user:%Win_Share_Username% %Win_Share_Password%
 goto :EOF
 
 :Results
-type c:\device\properties.txt
+type c:\LocalDropbox\properties.txt
 
-for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_RESULTS_SHARE :: " "C:\device\properties.txt"') do (set WIN_RESULTS_SHARE=%%b)
-for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE_USER :: " "C:\device\properties.txt"') do (set Win_Share_Username=%%b)
-for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE_PASS :: " "C:\device\properties.txt"') do (set Win_Share_Password=%%b)
+for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_RESULTS_SHARE :: " "C:\LocalDropbox\properties.txt"') do (set WIN_RESULTS_SHARE=%%b)
+for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE_USER :: " "C:\LocalDropbox\properties.txt"') do (set Win_Share_Username=%%b)
+for /f "tokens=2* delims= " %%a in ('findstr /C:"WIN_SHARE_PASS :: " "C:\LocalDropbox\properties.txt"') do (set Win_Share_Password=%%b)
 
 echo The Shared Drive is : %WIN_RESULTS_SHARE% >> %logfile%
 echo The Share Username is : %Win_Share_Username% >> %logfile%

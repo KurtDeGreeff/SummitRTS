@@ -15,6 +15,13 @@ function GetTimestamp{
 }
 
 #=======================================================================================
+function UnixTime($tDate=$Null) {
+	
+	if (! $tDate) {$tDate = Get-Date}
+	return [double] (Get-Date($tDate) -UFormat %s)
+}
+
+#=======================================================================================
 function writeLog($Msg) {
 	Write-Host ""
 	Write-Host "${dateNow} $Msg"

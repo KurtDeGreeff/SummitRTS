@@ -161,7 +161,7 @@ do {
 		# Run Testcase script
 		writeLog ("Running $Script_Path")
 		#Determine OS_Type to run OS specific command
-		if (! (ExecuteSUTScript $vmName, $VMUN, $VMPW, $Script_Path)) {
+		if (! (ExecuteSUTScript)) {
 			writeLog("${vmName} Running the specified Script $Script_Path Failed.")
 			$AgentStatus = $False
 			return $AgentStatus

@@ -5,14 +5,14 @@ rem write information about the test and SUT
 rem mount a share
 rem copy artifacts to the vm
 rem install software
-rem Copy provisioning Results
+rem Copy configure_SUT Results
 rem unmount a share
 
 
-set logfile=c:\device\device.log
+set logfile=c:\LocalDropbox\result.log
 set testName=%~1
 set vmname=%~2
-set testcase=Provisioning
+set testcase=configure_SUT
 
 echo ########## Starting Provision VM stage ########## >> %logfile%
 
@@ -28,50 +28,50 @@ whoami >> %logfile%
 echo the System version is : >> %logfile%
 ver >> %logfile%
 echo Writing Systeminfo to separate log file >> %logfile%
-systeminfo >> c:\device\systeminfo.log
+systeminfo >> c:\LocalDropbox\systeminfo.log
 goto :EOF
 
 :mount_Share
 echo Attempting to connect to shared drive >> %logfile%
-if exist "c:\device\connectShare.bat" (
-	start /wait "" "c:\device\connectShare.bat" provision
+if exist "c:\LocalDropbox\connectShare.bat" (
+	start /wait "" "c:\LocalDropbox\connectShare.bat" provision
 	echo Finished connecting to the shared drive >> %logfile%
 	goto :EOF
 )
-echo The file does not exist (c:\device\connectShare.bat) >> %logfile%
+echo The file does not exist (c:\LocalDropbox\connectShare.bat) >> %logfile%
 echo [PROVISIONING_FAILED] >> %logfile%
 goto :exit
 
 :Copy_Target_Scripts
 echo Attempting to copy Target scripts to vm >> %logfile%
-if exist "c:\device\copyScripts.bat" (
-	start /wait "" c:\device\copyScripts.bat
+if exist "c:\LocalDropbox\copyScripts.bat" (
+	start /wait "" c:\LocalDropbox\copyScripts.bat
 	echo Finished copying target Scripts to vm >> %logfile%
 	goto :EOF
 )
-echo The file does not exist (c:\device\copyScripts.bat) >> %logfile%
+echo The file does not exist (c:\LocalDropbox\copyScripts.bat) >> %logfile%
 echo [PROVISIONING_FAILED] >> %logfile%
 goto :exit
 
 :Disconnect_Share
 echo Disconnecting from Shared Drive >> %logfile%
-if exist "c:\device\batch\disconnectShare.bat" (
-	start /wait "" "c:\device\batch\disconnectShare.bat"
+if exist "c:\LocalDropbox\batch\disconnectShare.bat" (
+	start /wait "" "c:\LocalDropbox\batch\disconnectShare.bat"
 	echo Finished Disconnecting from Shared Drive >> %logfile%
 	goto :EOF
 )
-echo The file does not exist (c:\device\batch\disconnectShare.bat) >> %logfile%
+echo The file does not exist (c:\LocalDropbox\batch\disconnectShare.bat) >> %logfile%
 echo [PROVISIONING_FAILED] >> %logfile%
 goto :exit
 
 :Install_Software
 echo Installing Requested Software >> %logfile%
-if exist "c:\device\Software\installWrapper.bat" (
-	start /wait "" c:\device\Software\installWrapper.bat
+if exist "c:\LocalDropbox\Software\installWrapper.bat" (
+	start /wait "" c:\LocalDropbox\Software\installWrapper.bat
 	echo Finished Installing Requested Software >> %logfile%
 	goto :EOF
 )
-echo The file does not exist (c:\device\Software\installWrapper.bat) >> %logfile%
+echo The file does not exist (c:\LocalDropbox\Software\installWrapper.bat) >> %logfile%
 echo [PROVISIONING_FAILED] >> %logfile%
 goto :exit
 
@@ -83,23 +83,23 @@ goto :EOF
 
 :mount_Share_final
 echo Attempting to connect to shared drive >> %logfile%
-if exist "c:\device\connectShare.bat" (
-	start /wait "" "c:\device\connectShare.bat" results
+if exist "c:\LocalDropbox\connectShare.bat" (
+	start /wait "" "c:\LocalDropbox\connectShare.bat" results
 	echo Finished connecting to the shared drive >> %logfile%
 	goto :EOF
 )
-echo The file does not exist (c:\device\connectShare.bat) >> %logfile%
+echo The file does not exist (c:\LocalDropbox\connectShare.bat) >> %logfile%
 echo [PROVISIONING_FAILED] >> %logfile%
 goto :exit
 
 :copyResults
 echo Copying Provisioning results back to results Directory >> %logfile%
-if exist "c:\device\batch\copyResults.bat" (
-	start /wait "" "c:\device\batch\copyResults.bat" %testName% %vmname% %testcase%
+if exist "c:\LocalDropbox\batch\copyResults.bat" (
+	start /wait "" "c:\LocalDropbox\batch\copyResults.bat" %testName% %vmname% %testcase%
 	echo Finished Copying Provisioning results back to Results directory >> %logfile%
 	goto :EOF
 )
-echo The file does not exist (c:\device\batch\copyResults.bat) >> %logfile%
+echo The file does not exist (c:\LocalDropbox\batch\copyResults.bat) >> %logfile%
 echo [PROVISIONING_FAILED] >> %logfile%
 goto :exit
 

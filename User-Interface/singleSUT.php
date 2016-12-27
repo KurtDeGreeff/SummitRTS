@@ -43,7 +43,7 @@ if (!empty($_GET['sut_id'])) {
 				require_once 'components/Side_Bar.html';
 			?>
 			<div class="col-sm-9 col-md-10 col-lg-10 main">
-				<h3>Summit RTS Test Results for SUT:</h3>
+				<h3>Summit RTS Test Results:</h3>
 				<div class="row">
 		<table class="table table-striped table-bordered">
 			<tr>
@@ -103,8 +103,8 @@ if (!empty($_GET['sut_id'])) {
 								echo '<td>'. $row['ID'] . '</td>';
 								echo '<td>'. $row['Name'] . '</td>';		
 								echo '<td>'. $row['Order_Index'] . '</td>';
-								echo '<td style=background-color:'. $row['Status_Color'] . '>'. $row['Status'] . '</td>';
-								echo '<td style=background-color:'. $row['Result_Color'] . '>'. $row['Result_Name'] . '</td>';
+								echo '<td style=background-color:'. $row['Status_Color'] . '><b>'. $row['Status'] . '</b></td>';
+								echo '<td style=background-color:'. $row['Result_Color'] . '><b>'. $row['Result_Name'] . '</b></td>';
 								echo '<td>'. $row['date_modified'] . '</td>';
 							   	echo '<td>';							   	
 							   	echo '<form action="singleTestCase.php" method="get"><input type="hidden" name="testcase_id" value='.$row['ID'].'><input type="submit" class="btn btn-info" value="View TestCase"></form>';

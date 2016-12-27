@@ -94,7 +94,7 @@ $testcaseData = @(RunSQLCommand $query)
 foreach($row in $testcaseData) {
     $testcase_name = $row.Name
     $testcase_ID = $row.ID
-	if ($testcase_name -eq "DestroySUT") {
+	if ($testcase_name -eq "Destroy_SUT") {
 		writeLog("Testcase is DestroySUT Exiting Testcase loop")
 		writeLog("$testcase_name")
 		writeLog("$testcase_script")
@@ -110,7 +110,7 @@ foreach($row in $testcaseData) {
 		break
 	}
 	# Execute the SUT Provisioning Phase
-	ElseIf ($testcase_name -eq "Provisioning") {
+	ElseIf ($testcase_name -eq "provision_SUT") {
 		writeLog("----------")
 		writeLog("Testcase is Provisioning")
 		writeLog("$testcase_name")
@@ -118,9 +118,7 @@ foreach($row in $testcaseData) {
 		$query = "update test_cases set Status_ID='8' where ID = '$testcase_ID'"
 		RunSQLCommand $query
 		#Kick off subprocess to Provision SUT
-
 		if (! (. "${SCRIPTDIR}\..\workflow_utilities\provisionSUT.ps1" $testName $SUTname $hypervisor_Type $LogFile $testcase_ID)) {
-
 			writeLog("Something failed during Provisioning, we should destroy node now.")
 			$query = "update test_cases set Status_ID='9', Result_ID='4' where ID = '$testcase_ID'"
 			RunSQLCommand $query
@@ -151,19 +149,19 @@ foreach($row in $testcaseData) {
 			# Update the SUT table (Deactivate Console URL)
 			if ($hypervisor_Type -eq "vSphere"){
 				writeLog("Activating the Console URL for SUT on Hypervisor: $hypervisor_Type")
-				$query = "update suts set Console_Active='1' where SUT_ID = '$sut_ID'"
+				$query = "update suts set Console_Active='1' where ID = '$sut_ID'"
 				RunSQLCommand $query
-				writeLog("The SUT passed Configure_SUT phase, moving on!")
+				writeLog("The SUT passed provision_SUT phase, moving on!")
 				writeLog("----------")
 			} else {
 				writeLog("Not activating Console URL for SUT on Hypervisor : $hypervisor_Type")
-				writeLog("The SUT passed Configure_SUT phase, moving on!")
+				writeLog("The SUT passed provision_SUT phase, moving on!")
 				writeLog("----------")					
 			}
 		}
 	}
     # SUT Configuration
-	ElseIf ($testcase_name -eq "SUT_Configuration") {
+	ElseIf ($testcase_name -eq "configure_SUT") {
 		writeLog("----------")
 		writeLog("Testcase is SUT_Configuration, Configuring VM")
 		writeLog("TestCase Name - $testcase_name")
@@ -171,15 +169,13 @@ foreach($row in $testcaseData) {
 		$query = "update test_cases set Status_ID='8' where ID = '$testcase_ID'"
 		RunSQLCommand $query
 		#Kick off subprocess to Configure SUT and check return code
-
 		if (! (. "${SCRIPTDIR}\..\workflow_utilities\configureSUT.ps1" $testName $SUTname $hypervisor_Type $LogFile $testcase_ID)) {
-
 			writeLog("Something failed during configuration, we should destroy the SUT now.")
 			#update the Testcase table (update Configure SUT row, mark it as COMPLETE, fail)
 			$query = "update test_cases set Status_ID='9', Result_ID='4' where ID = '$testcase_ID'"
 			RunSQLCommand $query
 			#Mark all of the other SUT testcases as COMPLETE, Not_Run
-			$query = "update test_cases set Status_ID='9', Result_ID='5' where SUT_ID = '$sut_ID' and (name not like 'SUT_Configuration' or name not like 'Provisioning')"
+			$query = "update test_cases set Status_ID='9', Result_ID='5' where SUT_ID = '$sut_ID' and Status_ID not like '9'"
 			RunSQLCommand $query
 			writeLog("----------")
 			#Break to Destroy SUT
@@ -215,10 +211,8 @@ foreach($row in $testcaseData) {
 		$query = "update test_cases set Status_ID='8' where ID = '$testcase_ID'"
 		RunSQLCommand $query
 		#Kick off subprocess to Execute_Testcase and get return code
-
 		if (! (. "${SCRIPTDIR}\..\workflow_utilities\testCaseExecutioner.ps1" $testName $SUTname $hypervisor_Type $LogFile $Testcase_Id $testcase_name)) {
-
-			writeLog("Something failed during the Testcase, we should destroy node now.")
+			writeLog("Something failed during the Testcase, we should destroy SUT now.")
 			#update the Testcase table (update Provision SUT row, mark it as COMPLETE, fail)
 			$query = "update test_cases set Status_ID='9', Result_ID='4' where ID = '$testcase_ID'"
 			RunSQLCommand $query
@@ -262,7 +256,7 @@ if (! (. "${SCRIPTDIR}\..\workflow_utilities\destroySUT.ps1" $testName $SUTname 
 } Else {
 	writeLog("Destroy VM COMPLETED!")
 	#update the Testcase table (update Destroy_SUT row, mark it as COMPLETE, pass)
-	$query = "update test_cases set Status_ID='9', Result_ID='1' where Name='DestroySUT' and SUT_ID = '$sut_ID'"
+	$query = "update test_cases set Status_ID='9', Result_ID='1' where Name='Destroy_SUT' and SUT_ID = '$sut_ID'"
 	RunSQLCommand $query
 }
 ####################################

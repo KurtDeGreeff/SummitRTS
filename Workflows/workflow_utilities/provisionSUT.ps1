@@ -86,6 +86,7 @@ $Tools_Available = (@(RunSQLCommand $query)).tools_available
 ####################################
 $vmName = $templateName
 $vCenter = $hyp_MGR
+$ESXhost = $hyp_IP
 
 # Echo a line about starting the test
 writeLog("Starting SUT Configuration for test: ${testName} on Template VM : ${vmName}")
