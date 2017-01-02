@@ -142,6 +142,7 @@ do {
 				Break
 			}
 		}
+		
 		# wait 3 seconds
 		writeLog ("Pausing 3 seconds")
 		pause 3
@@ -157,6 +158,10 @@ do {
 				Break
 			}
 		}
+			
+		# wait 10 seconds
+		writeLog ("Pausing 10 seconds")
+		pause 10
 
 		# Run Testcase script
 		writeLog ("Running $Script_Path")

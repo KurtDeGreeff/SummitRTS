@@ -68,7 +68,7 @@
 				<name>TestCase01</name>
 				<testcase_scripts>
 					<testcase_script ID="1">
-						<name>TestCase01.sh</name>
+						<name>testcase01.sh</name>
 					</testcase_script>
 				</testcase_scripts>
 			</testcase>
@@ -76,7 +76,7 @@
 				<name>TestCase02</name>
 				<testcase_scripts>
 					<testcase_script ID="1">
-						<name>TestCase02.sh</name>
+						<name>testcase02.sh</name>
 					</testcase_script>
 				</testcase_scripts>
 			</testcase>

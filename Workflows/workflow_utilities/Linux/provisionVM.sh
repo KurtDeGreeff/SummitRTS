@@ -6,7 +6,7 @@
 # mount a share
 # copy artifacts to the vm
 # install software
-# Copy provisioning Results
+# Copy configure_SUT Results
 # unmount a share
 
 #set the variables
@@ -14,7 +14,7 @@ logfile=/LocalDropbox/result.log
 echo ---------- Starting to Provision the SUT ---------->> $logfile
 testName=$1
 vmname=$2
-testcase=provisioning
+testcase=configure_SUT
 
 #write some system information
 echo Testname is :$testName >> $logfile
