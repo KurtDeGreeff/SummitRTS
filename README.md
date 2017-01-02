@@ -1,6 +1,6 @@
 ![Alt text](https://github.com/BelayTechnologies/SummitRTS/blob/master/z-docs/SummitRTS.png "SummitRTS")
 
-# SummitRTS
+# Automated Provisioning and Testing
 SummitRTS is an automation Framework that offers a Provisioning service and task execution engine, capable of software installation, machine or software configuration, upgrade/patch applications, security testing, troubleshooting networks and more. SummitRTS leverages common API's to control and interact with virtual machines to significantly speed up and stabilize functions for software development, testing, system administration, security, networking and similar projects. Removing the human element and utilizing the 'set it and forget it' approach, Belay's SummitRTS allows for increased productivity and reliability of results, as well as reduced labor costs. 
 
 
