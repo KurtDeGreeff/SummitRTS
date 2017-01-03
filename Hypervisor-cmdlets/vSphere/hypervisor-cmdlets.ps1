@@ -289,10 +289,16 @@ function ExecuteSUTScript {
 		#Perform the Linux equivalent
 		$Echo = Invoke-VMScript -ScriptText "/bin/bash /LocalDropbox/execute_testcase.sh $testName $vmname $testcase_name $Script_Path" -VM $vmname -GuestUser $VMUN -GuestPassword $VMPW -ErrorAction SilentlyContinue
 		if ($Echo.ExitCode -ne 0) {
-			writeLog("${vmName} Invoke-VMScript Failed. $Script_Path failed to run. ")
-			$AgentStatus = $False
-			return $AgentStatus
-			Break
+			# pause 15 seconds try again.
+			writeLog("Failed to execute the script, waiting 30 seconds and trying again.")
+			pause 30
+			$Echo = Invoke-VMScript -ScriptText "/bin/bash /LocalDropbox/execute_testcase.sh $testName $vmname $testcase_name $Script_Path" -VM $vmname -GuestUser $VMUN -GuestPassword $VMPW -ErrorAction SilentlyContinue
+			if ($Echo.ExitCode -ne 0) {
+				writeLog("${vmName} Invoke-VMScript Failed. $Script_Path failed to run.")
+				$AgentStatus = $False
+				return $AgentStatus
+				Break
+			}
 		}
 	} Elseif ($OS_Type -eq "Android") {
 		#Start the ADB Provision script

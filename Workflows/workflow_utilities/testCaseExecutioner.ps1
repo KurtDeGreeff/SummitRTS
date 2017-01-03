@@ -131,20 +131,9 @@ do {
 		$Script_Path = $testcasescriptdata[$counter].Script_Path
 		$Order_Index = $testcasescriptdata[$counter].Order_Index
 
-		# Connect to the Vcenter or server
-		if ($hypervisor_Type -eq "vSphere"){
-			writeLog("ConnectVcenter is attaching to vcenter ${Vcenter}.")
-			if(! $DEVICECONN -and ! ($DEVICECONN = ConnectVcenter)) {
-				writeLog("ConnectVcenter ${Vcenter} Failed.")
-				$AgentStatus = $False
-				return $AgentStatus
-				Break
-			}
-		}
-		
-		# wait 3 seconds
-		writeLog ("Pausing 3 seconds")
-		pause 3
+		# wait 10 seconds
+		writeLog ("Pausing 10 seconds")
+		pause 10
 
 		# Wait for VMtools to start
 		if ($OS_Type -ne "Android") {
