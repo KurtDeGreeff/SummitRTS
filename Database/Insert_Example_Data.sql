@@ -48,8 +48,8 @@ VALUES (1,'vSphere'),(2,'vmwks'),(3,'vBox'),(99,'Placeholder');
 INSERT INTO HYPERVISORS (ID, Hypervisor_Type_ID, IP_Address, Username, Password, Version, Mgmt_IP, Datacenter, Datastore, Max_Concurrent_SUTS, Status_ID)
 VALUES (1,1,'192.168.2.10','administrator','VMware1!','6.5','192.168.2.200','DC01','synology',1,11),
 (2,1, '192.168.10.54','root','BelayTech2016','5','192.168.10.86','Device','datastore-1',1,12),
-(3,2,'127.0.0.1','administrator','BelayTech2016','12.0','127.0.0.1','Device','C:\\temp\\WKS',1,11),
-(4,3,'127.0.0.2','administrator','BelayTech2016','5.0.14','127.0.0.2','Device','C:\\temp\\vbox',1,11);
+(3,2,'127.0.0.1','administrator','BelayTech2016','12.0','127.0.0.1','Device','J:\\VirtualMachines\\WKS',1,11),
+(4,3,'127.0.0.2','administrator','BelayTech2016','5.0.14','127.0.0.2','Device','J:\\VirtualMachines\\vBox',1,11);
 
 INSERT INTO HYPERVISORS (id,hypervisor_type_ID,username,password,version,datacenter,datastore,STATUS_ID,Max_Concurrent_SUTS,Description) 
 VALUES (99,99,'none','none','none','none','none',12,0,'Placeholder');

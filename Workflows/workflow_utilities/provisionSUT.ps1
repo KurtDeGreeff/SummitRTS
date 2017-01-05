@@ -134,7 +134,17 @@ if ($AgentStatus = $true) {
 	}
 	$vmName = $vmClone
 	writeLog("Reset the SUT name to ${vmName} to simplify scripts.")
-	
+
+	if ($hypervisor_Type -eq "vBox"){
+		writeLog("Registerring the cloned VM to vBox")
+		if (! (RegisterClone $vmName)) {
+			writeLog("${vmName} failed to Clone.")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+	}
+
 	# wait 3 seconds
 	writeLog ("Pausing 3 seconds")
 	pause 3
@@ -168,33 +178,46 @@ if ($AgentStatus = $true) {
 	pause 3
 	
 	# Wait for Power
-	writeLog("WaitForPower. Waiting no more than ${MAXWAITSECS} seconds.")
-	if(! (WaitForPower $vmName $MAXWAITSECS)) {
-		writeLog("${vmName} WaitForPower Failed. VMTools failed to respond. ")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
+	if ($hypervisor_Type -eq "vSphere"){
+		writeLog("WaitForPower. Waiting no more than ${MAXWAITSECS} seconds.")
+		if(! (WaitForPower $vmName $MAXWAITSECS)) {
+			writeLog("${vmName} WaitForPower Failed. VMTools failed to respond. ")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+	} else {
+		writeLog("Hypervisor is $hypervisor_Type Waiting for vm to power on.")
+		# wait 30 seconds
+		writeLog ("Pausing 30 seconds")
+		pause 30
 	}
-	
+
 	# wait 3 seconds
 	writeLog ("Pausing 3 seconds")
 	pause 3
 	
 	# Wait for VMtools to start
-	if ($OS_Type -ne "Android") {
-		# Android does not currently support VMtools
-		writeLog("WaitForTools. Waiting no more than ${TOOLSWAIT} seconds.")
-		if(! (WaitForTools $vmName $TOOLSWAIT)) {
-			writeLog("${vmName} WaitForTools Failed. VMTools failed to respond. ")
-			$AgentStatus = $False
-			return $AgentStatus
-			Break
+	if ($hypervisor_Type -eq "vSphere"){
+		if ($OS_Type -ne "Android") {
+			# Android does not currently support VMtools
+			writeLog("WaitForTools. Waiting no more than ${TOOLSWAIT} seconds.")
+			if(! (WaitForTools $vmName $TOOLSWAIT)) {
+				writeLog("${vmName} WaitForTools Failed. VMTools failed to respond. ")
+				$AgentStatus = $False
+				return $AgentStatus
+				Break
+			}
+		} elseif($OS_Type -eq "Android") {
+			writeLog("Waiting 60 seconds for Android to power on")
+			pause 60
 		}
-	} elseif($OS_Type -eq "Android") {
-		writeLog("Waiting 60 seconds for Android to power on")
-		pause 60
+	} else {
+		writeLog("Hypervisor is $hypervisor_Type Waiting for Client Tools to start.")
+		# wait 30 seconds
+		writeLog ("Pausing 30 seconds")
+		pause 30
 	}
-	
 	# wait 60 seconds
 	writeLog ("Pausing 60 seconds to obtain proper IPaddress")
 	pause 60

@@ -31,7 +31,8 @@ $VCcenterCONN = $Null
 $AgentStatus = $true
 
 #=======================================================================================
-
+# Echo a line about starting the test
+writeLog("Starting Testcase ID ${testcase_ID} for test: ${testName} on SUT: ${vmName}")
 #=======================================================================================
 # Get All the SUT related items needed to run the workflow
 $query = "select sut.ID,
@@ -126,14 +127,20 @@ if ($AgentStatus = $true) {
 	pause 5
 	
 	# Delete the SUT VM
-	writeLog("DeleteVm is deleting the SUT VM")
-	if (! (DeleteVm $vmName)) {
-		writeLog("${vmName} failed to delete.")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
+	if ($hypervisor_Type -eq "vSphere"){
+		writeLog("DeleteVm is deleting the SUT VM")
+		if (! (DeleteVm $vmName)) {
+			writeLog("${vmName} failed to delete.")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+	} elseif ($hypervisor_Type -eq "vBox") {
+		DeleteVm $vmName
+	} elseif ($hypervisor_Type -eq "vmwks") {
+		DeleteVm $vmName
 	}
-	
+
 	# wait  seconds
 	writeLog ("Pausing 3 seconds")
 	pause 3

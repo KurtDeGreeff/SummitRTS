@@ -1,0 +1,100 @@
+<TestPlan>
+	<SUT ID="1">
+		<name>SUT01</name>
+		<type>Transient</type>
+		<Hypervisor_type>vmwks</Hypervisor_type>
+		<Workflow>TestCase_Default</Workflow>
+		<provision_SUT>
+			<template>
+				<easy_name>Win_7_test_vm</easy_name>
+			</template>
+		</provision_SUT>
+		<configure_SUT>
+			<configure_Script>
+				<name>provisionVM.bat</name>
+			</configure_Script>
+			<software>
+				<application ID="1">
+					<name>chrome</name>
+					<version>27.0.1</version>
+				</application>
+			</software>
+		</configure_SUT>
+		<testcases>
+			<testcase ID="1">
+				<name>TestCase01</name>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase01.bat</name>
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase01.bat</name>
+					</testcase_script>
+				</testcase_scripts>
+			</testcase>
+			<testcase ID="2">
+				<name>TestCase02</name>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase02.bat</name>
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase02.bat</name>
+					</testcase_script>
+				</testcase_scripts>
+			</testcase>
+		</testcases>
+		<destroy_SUT>
+			<property>true</property>
+		</destroy_SUT>
+	</SUT>
+	<SUT ID="2">
+		<name>SUT02</name>
+		<type>Transient</type>
+		<Hypervisor_type>vmwks</Hypervisor_type>
+		<Workflow>TestCase_Default</Workflow>
+		<provision_SUT>
+			<template>
+				<easy_name>Win_10_test_vm</easy_name>
+			</template>
+		</provision_SUT>
+		<configure_SUT>
+			<configure_Script>
+				<name>provisionVM.bat</name>
+			</configure_Script>
+			<software>
+				<application ID="1">
+					<name>chrome</name>
+					<version>27.0.1</version>
+				</application>
+			</software>
+		</configure_SUT>
+		<testcases>
+			<testcase ID="1">
+				<name>TestCase01</name>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase01.bat</name>
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase01.bat</name>
+					</testcase_script>
+				</testcase_scripts>
+			</testcase>
+			<testcase ID="2">
+				<name>TestCase02</name>
+				<testcase_scripts>
+					<testcase_script ID="1">
+						<name>TestCase02.bat</name>
+					</testcase_script>
+					<testcase_script ID="2">
+						<name>TestCase02.bat</name>
+					</testcase_script>
+				</testcase_scripts>
+			</testcase>
+		</testcases>
+		<destroy_SUT>
+			<property>true</property>
+		</destroy_SUT>
+	</SUT>
+</TestPlan>

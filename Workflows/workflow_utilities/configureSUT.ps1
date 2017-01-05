@@ -106,15 +106,20 @@ $VMPW = $sutData.OS_User_PWD
 	pause 3
 
 	# Copy the files to the Target vm that will be run from the Host server
-	writeLog ("Copying Specify Files to the VM : $vmName")
+	writeLog ("Copying Specify Files to the VM : $vmName for OS_Type: $OS_Type")
 	#Determine OS_Type to run OS specific command
-	if (! (CopyFilestoSUT)) {
-		writeLog("${vmName} Copying files to SUT Failed.")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
+	if ($hypervisor_Type -eq "vSphere"){
+		if (! (CopyFilestoSUT)) {
+			writeLog("${vmName} Copying files to SUT Failed.")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+	} elseif ($hypervisor_Type -eq "vBox"){
+		CopyFilestoSUT
+	} elseif ($hypervisor_Type -eq "vmwks"){
+		CopyFilestoSUT
 	}
-
 
 # Get Testcase script information
 $query = "select * from test_case_scripts where Test_Case_ID like $testcase_ID order by Order_Index"
@@ -130,16 +135,6 @@ do {
 		$Script_Path = $testcasescriptdata[$counter].Script_Path
 		$Order_Index = $testcasescriptdata[$counter].Order_Index
 
-		# Connect to the Vcenter or server
-		if ($hypervisor_Type -eq "vSphere"){
-			writeLog("ConnectVcenter is attaching to vcenter ${Vcenter}.")
-			if(! $DEVICECONN -and ! ($DEVICECONN = ConnectVcenter)) {
-				writeLog("ConnectVcenter ${Vcenter} Failed.")
-				$AgentStatus = $False
-				return $AgentStatus
-				Break
-			}
-		}
 		# wait 3 seconds
 		writeLog ("Pausing 3 seconds")
 		pause 3
@@ -147,13 +142,19 @@ do {
 		# Run Configuration script
 		writeLog ("Running $Script_Path")
 		#Determine OS_Type to run OS specific command
-		if (! (ExecuteSUTProvisionScript)) {
-			writeLog("${vmName} Running the specified Script $Script_Path Failed.")
-			$AgentStatus = $False
-			return $AgentStatus
-			Break
-		}	
+		if ($hypervisor_Type -eq "vSphere"){
+			if (! (ExecuteSUTProvisionScript)) {
+				writeLog("${vmName} Running the specified Script $Script_Path Failed.")
+				$AgentStatus = $False
+				return $AgentStatus
+				Break
+			}	
 
+		} elseif ($hypervisor_Type -eq "vBox") {
+			ExecuteSUTProvisionScript
+		} elseif ($hypervisor_Type -eq "vmwks") {
+			ExecuteSUTProvisionScript
+		}
 	}
 	$counter++
 } while ($counter -lt $testcasescriptdata.count)

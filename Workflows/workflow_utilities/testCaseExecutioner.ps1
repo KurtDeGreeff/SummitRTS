@@ -136,17 +136,18 @@ do {
 		pause 10
 
 		# Wait for VMtools to start
-		if ($OS_Type -ne "Android") {
-			#Android does not currently work with vmtools
-			writeLog("WaitForTools. Waiting no more than ${TOOLSWAIT} seconds.")
-			if(! (WaitForTools $vmName $TOOLSWAIT)) {
-				writeLog("${vmName} WaitForTools Failed. VMTools failed to respond. ")
-				$AgentStatus = $False
-				return $AgentStatus
-				Break
+		if ($hypervisor_Type -eq "vSphere"){
+			if ($OS_Type -ne "Android") {
+				#Android does not currently work with vmtools
+				writeLog("WaitForTools. Waiting no more than ${TOOLSWAIT} seconds.")
+				if(! (WaitForTools $vmName $TOOLSWAIT)) {
+					writeLog("${vmName} WaitForTools Failed. VMTools failed to respond. ")
+					$AgentStatus = $False
+					return $AgentStatus
+					Break
+				}
 			}
 		}
-			
 		# wait 10 seconds
 		writeLog ("Pausing 10 seconds")
 		pause 10
@@ -154,12 +155,18 @@ do {
 		# Run Testcase script
 		writeLog ("Running $Script_Path")
 		#Determine OS_Type to run OS specific command
-		if (! (ExecuteSUTScript)) {
-			writeLog("${vmName} Running the specified Script $Script_Path Failed.")
-			$AgentStatus = $False
-			return $AgentStatus
-			Break
-		}	
+		if ($hypervisor_Type -eq "vSphere"){
+			if (! (ExecuteSUTScript)) {
+				writeLog("${vmName} Running the specified Script $Script_Path Failed.")
+				$AgentStatus = $False
+				return $AgentStatus
+				Break
+			}
+		} elseif ($hypervisor_Type -eq "vBox"){	
+			ExecuteSUTScript
+		} elseif ($hypervisor_Type -eq "vmwks"){	
+			ExecuteSUTScript
+		}
 
 	}
 	$counter++
