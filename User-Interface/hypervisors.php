@@ -25,7 +25,7 @@ $(document).ready(function() {
 				require_once 'components/Side_Bar.html';
 			?>
 			<div class="col-sm-9 col-md-10 col-lg-10 main">
-				<h3>Summit RTS Available Software Information</h3>
+				<h3>Summit RTS Hypervisor Information</h3>
 				<div class="row">
 					<p>
 						<a href="createHypervisor.php" class="btn btn-success">Create</a>
