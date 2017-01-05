@@ -1,7 +1,7 @@
 ![Alt text](https://github.com/BelayTechnologies/SummitRTS/blob/master/z-docs/SummitRTS.png "SummitRTS")
 
 # Automated Provisioning and Testing
-SummitRTS is an automation Framework that offers a Provisioning service and task execution engine, capable of software installation, machine or software configuration, upgrade/patch applications, security testing, troubleshooting networks and more. SummitRTS leverages common API's to control and interact with virtual machines to significantly speed up and stabilize functions for software development, testing, system administration, security, networking and similar projects. Removing the human element and utilizing the 'set it and forget it' approach, Belay's SummitRTS allows for increased productivity and reliability of results, as well as reduced labor costs. 
+SummitRTS is an Automation Framework that offers a Provisioning service and task execution engine capable of software installation, machine or software configuration, upgrade/patch applications, security testing, troubleshooting networks and more. SummitRTS leverages common API's to control and interact with virtual machines to significantly speed up and stabilize functions for software development, testing, system administration, security, networking and similar projects. Removing the human element and utilizing the 'set it and forget it' approach, Belay's SummitRTS allows for increased productivity and reliability of results, as well as reduced labor costs. 
 
 
 The SummitRTS framework is capable of quickly executing multiple actions against a matrix of Operating Systems, versions, patch levels, languages and applications with no user interaction. The Developer/Tester/System Administrator selects the environment and the test plan, SummitRTS handles everything else from the provisioning of a clean testing environment, to the installation and configuration of software, to the execution of the test plan, reverting to original state and publishing of the results to the User Interface.
@@ -21,7 +21,7 @@ The SummitRTS framework is capable of quickly executing multiple actions against
 
 * Software developers can use SummitRTS to test their software, whether it be the installation of their software, upgrade of their software, or utilization of their software in multiple environments.  
 
-* Testers can use SummitRTS to help them automate and test in a clean repeatable environment.  Device can be used to mimick Key strokes and Mouse clicks, so its very powerful.  
+* Testers can use SummitRTS to help them automate and test in a clean repeatable environment.  SummitRTS can be used to mimick Key strokes and Mouse clicks, so it's very powerful.  
 
 * Security would be able to test their offensive and defensive techniques in a clean/repeatable environment.  
 
