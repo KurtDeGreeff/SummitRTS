@@ -126,11 +126,23 @@ if ($AgentStatus = $true) {
 	# Clone the Template VM
 	writeLog("CloneVM is creating a clone of the Template VM")
 	$vmClone = $SUTname
-	if (! (CloneVM $vmName $vmClone)) {
-		writeLog("${vmName} failed to Clone.")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
+	if ($hypervisor_Type -eq "vmwks"){
+		$VMX_Path = $DATASTORE + "\" + $vmName + "\" + $vmName + ".vmx"
+		$Clone_VMX_Path = $DATASTORE + "\" + $vmClone + "\" + $vmClone + ".vmx"
+		if (! (CloneVM $VMX_Path $vmName $Clone_VMX_Path)) {
+			writeLog("${vmName} failed to Clone.")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+		$VMX_Path = $Clone_VMX_Path	
+	} else {
+		if (! (CloneVM $vmName $vmClone)) {
+			writeLog("${vmName} failed to Clone.")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}		
 	}
 	$vmName = $vmClone
 	writeLog("Reset the SUT name to ${vmName} to simplify scripts.")
@@ -165,14 +177,23 @@ if ($AgentStatus = $true) {
 	pause 3
 	
 	# Power on the Cloned VM
-	writeLog("StartVM is powering on the SUT VM")
-	if (! (StartVM $vmName)) {
-		writeLog("${vmName} failed to power on.")
-		$AgentStatus = $False
-		return $AgentStatus
-		Break
+	if ($hypervisor_Type -eq "vmwks"){
+		writeLog("StartVM is powering on the SUT VM in $hypervisor_Type")
+		if (! (StartVM $vmName $VMX_Path)) {
+			writeLog("${vmName} failed to power on.")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}
+	} else {
+		writeLog("StartVM is powering on the SUT VM")
+		if (! (StartVM $vmName)) {
+			writeLog("${vmName} failed to power on.")
+			$AgentStatus = $False
+			return $AgentStatus
+			Break
+		}	
 	}
-	
 	# wait 3 seconds
 	writeLog ("Pausing 3 seconds")
 	pause 3
@@ -225,11 +246,20 @@ if ($AgentStatus = $true) {
 	# Get and write the IPAddress from the vm to the Database
 	if($Tools_Available -eq 1){
 		writeLog("Querying the Hypervisor for the IP for vm: $vmName")
-		if (! (GetIPAddress $vmName)) {
-			writeLog("${vmName} failed to get IP Address.")
-			$AgentStatus = $False
-			return $AgentStatus
-			Break
+		if ($hypervisor_Type -eq "vmwks"){
+			if (! (GetIPAddress $VMX_Path)) {
+				writeLog("${vmName} failed to get IP Address.")
+				$AgentStatus = $False
+				return $AgentStatus
+				Break
+			}
+		} else {
+			if (! (GetIPAddress $vmName)) {
+				writeLog("${vmName} failed to get IP Address.")
+				$AgentStatus = $False
+				return $AgentStatus
+				Break
+			}
 		}
 	} elseif($Tools_Available -eq 0){
 		writeLog("The vm: $vmname does not have vmtools available.")

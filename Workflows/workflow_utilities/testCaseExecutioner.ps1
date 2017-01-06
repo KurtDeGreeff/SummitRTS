@@ -106,13 +106,21 @@ if ($hypervisor_Type -eq "vSphere"){
 
 # Revert to a Snapshot named PostProvision
 writeLog("RevertSnapshot is reverting to a PostProvision Snapshot of the SUT")
-if (! (RevertSnapshot $vmName $MAXWAITSECS)) {
-	writeLog("${vmName} failed to Revert Snapshot.")
-	$AgentStatus = $False
-	return $AgentStatus
-	Break
+if ($hypervisor_Type -eq "vmwks"){
+	if (! (RevertSnapshot $VMX_Path)) {
+		writeLog("${vmName} failed to Revert Snapshot.")
+		$AgentStatus = $False
+		return $AgentStatus
+		Break
+	}
+} else {
+	if (! (RevertSnapshot $vmName $MAXWAITSECS)) {
+		writeLog("${vmName} failed to Revert Snapshot.")
+		$AgentStatus = $False
+		return $AgentStatus
+		Break
+	}
 }
-
 # wait 3 seconds
 writeLog ("Pausing 3 seconds")
 pause 3
@@ -165,7 +173,7 @@ do {
 		} elseif ($hypervisor_Type -eq "vBox"){	
 			ExecuteSUTScript
 		} elseif ($hypervisor_Type -eq "vmwks"){	
-			ExecuteSUTScript
+			ExecuteSUTScript $VMX_Path
 		}
 
 	}

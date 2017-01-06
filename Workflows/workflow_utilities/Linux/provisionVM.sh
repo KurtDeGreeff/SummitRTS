@@ -12,6 +12,7 @@
 #set the variables
 logfile=/LocalDropbox/result.log
 echo ---------- Starting to Provision the SUT ---------->> $logfile
+dhclient
 testName=$1
 vmname=$2
 testcase=configure_SUT
@@ -35,7 +36,7 @@ echo copying SUT scripts to this SUT >> $logfile
 sleep 20
 #disconnect the Cifs Shared drive
 echo disconnnecing Cifs shared drive >> $logfile
-. /LocalDropbox/scripts/disconnectshare.sh
+. /LocalDropbox/scripts/disconnectShare.sh
 sleep 5
 #Install software
 echo installing software >> $logfile

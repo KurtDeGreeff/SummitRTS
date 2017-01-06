@@ -120,7 +120,7 @@ function ExecuteSUTProvisionScript {
 		. $vBoxManage guestcontrol $vmName run c:\LocalDropbox\$Script_Path $testName $vmName --username $VMUN --password $VMPW
 	} ElseIf ($OS_Type -eq "Linux") {
 		#Perform the Linux equivalent
-		. $vBoxManage guestcontrol $vmName run "/bin/bash /LocalDropbox/$Script_Path $testName $vmName" --username $VMUN --password $VMPW
+		. $vBoxManage guestcontrol $vmName run /bin/bash /LocalDropbox/$Script_Path $testName $vmName --username $VMUN --password $VMPW
 	} Elseif ($OS_Type -eq "Android") {
 		# Use ADB to execute files
 	} Else {
@@ -137,7 +137,7 @@ function ExecuteSUTScript {
 		. $vBoxManage guestcontrol $vmName run c:\LocalDropbox\execute_testcase.bat $testName $vmName $testcase_name $Script_Path --username $VMUN --password $VMPW --timeout $task_timeout
 	} ElseIf ($OS_Type -eq "Linux") {
 		#Perform the Linux equivalent
-		. $vBoxManage guestcontrol $vmName run "/bin/bash /LocalDropbox/execute_testcase.sh $testName $vmName $testcase_name $Script_Path" --username $VMUN --password $VMPW --timeout $task_timeout
+		. $vBoxManage guestcontrol $vmName run /bin/bash /LocalDropbox/execute_testcase.sh $testName $vmName $testcase_name $Script_Path --username $VMUN --password $VMPW --timeout $task_timeout
 	} Elseif ($OS_Type -eq "Android") {
 		# Use ADB to execute files
 	} Else {

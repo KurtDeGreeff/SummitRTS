@@ -10,7 +10,6 @@ writeLog("Root Execution directory is '${SCRIPTDIR}'")
 #=======================================================================================
 # Set the path for vmRun.exe
 $vmRun = "C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe"
-$VMX_Path = $DATASTORE + "\" + $vmName + "\" + $vmName + ".vmx"
 
 #=======================================================================================
 function ShutdownVm {
@@ -19,14 +18,16 @@ function ShutdownVm {
 }
 
 #=======================================================================================
-function DeleteVm {
+function DeleteVm($VMX_Path) {
 	# Permanently delete the Vm
+	# Remove any lck files
+	writeLog("deleting LCK files from this directory $datastore\$vmname")
+	get-childitem $datastore\$vmname -include *.lck -recurse | foreach ($_) {remove-item -Recurse $_.fullname -Confirm:$False} 
 	. $vmRun deleteVM $VMX_Path 
 }
 
 #=======================================================================================
-function CloneVM {
-	$Clone_VMX_Path = $DATASTORE + "\" + $vmClone + "\" + $vmClone + ".vmx"
+function CloneVM ($VMX_Path, $vmName, $Clone_VMX_Path) {
 	writeLog("The Template vm being used is ${VMX_Path}, and the clone/SUT vm is ${Clone_VMX_Path}")
 	writeLog("$vmRun clone $VMX_Path $Clone_VMX_Path full")
 	. $vmRun clone $VMX_Path $Clone_VMX_Path full
@@ -36,14 +37,14 @@ function CloneVM {
 }
 
 #=======================================================================================
-function StartVM($vmName) {
+function StartVM($vmName, $VMX_Path) {
 	#Start the VM
 	. $vmRun start $VMX_Path
 	return $True
 }
 	
 #=======================================================================================
-function CreateSnapshot {
+function CreateSnapshot ($VMX_Path) {
 	#set the Snapshot name
 	$SnapshotName = "PostProvision"
 	
@@ -53,7 +54,7 @@ function CreateSnapshot {
 }
 
 #=======================================================================================
-function RevertSnapshot {
+function RevertSnapshot ($VMX_Path) {
 	# Revert the Snapshot
 	$SnapshotName = "PostProvision"
 	#revert the snapshot
@@ -64,7 +65,7 @@ function RevertSnapshot {
 }
 
 #=======================================================================================
-function GetIPAddress {
+function GetIPAddress ($VMX_Path) {
 	$VMIP = . $vmrun getGuestipaddress $VMX_Path
 	writeLog("Adding IP: $VMIP to DB for SUT $vmName")
 	$query = "update suts set IP_Address='$VMIP' where Name = '$vmName'"
@@ -73,7 +74,7 @@ function GetIPAddress {
 }
 
 #=======================================================================================
-function CopyFilestoSUT {
+function CopyFilestoSUT ($VMX_Path) {
 	writeLog ("Copying Specify Files to the VM.")
 	#Determine OS_Type to run OS specific command
 	if ($OS_Type -eq "Windows") {
@@ -99,7 +100,7 @@ function CopyFilestoSUT {
 }
 
 #=======================================================================================
-function ExecuteSUTProvisionScript {
+function ExecuteSUTProvisionScript ($VMX_Path) {
 	writeLog ("Running $Script_Path")
 	#Determine OS_Type to run OS specific command
 	if ($OS_Type -eq "Windows") {
@@ -117,8 +118,8 @@ function ExecuteSUTProvisionScript {
 }
 
 #=======================================================================================
-function ExecuteSUTScript {
-	writeLog ("Running execute_testcase script for ${testCase} with subScript: $Script_Path")
+function ExecuteSUTScript($VMX_Path) {
+	writeLog ("Running execute_testcase script for ${testCase_name} with subScript: $Script_Path")
 	#Determine OS_Type to run OS specific command
 	if ($OS_Type -eq "Windows") {
 		. $vmRun -gu $VMUN -gp $VMPW runProgramInGuest $VMX_Path c:\LocalDropbox\execute_testcase.bat $testName $vmName $testcase_name $Script_Path

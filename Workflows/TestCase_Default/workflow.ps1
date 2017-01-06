@@ -240,7 +240,7 @@ foreach($row in $testcaseData) {
 ####################################
 writeLog("I made it out of the loop Destroying the vm")
 # Update Testcase table (update Destroy_SUT row, mark it as running, no_result)
-$query = "update test_cases set Status_ID='8' where Name='DestroySUT' and SUT_ID = '$sut_ID'"
+$query = "update test_cases set Status_ID='8' where Name='Destroy_SUT' and SUT_ID = '$sut_ID'"
 RunSQLCommand $query
 # Update the SUT table (Deactivate Console URL)
 $query = "update suts set Console_Active='0' where ID = '$sut_ID'"

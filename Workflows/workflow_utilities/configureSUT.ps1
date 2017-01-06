@@ -118,7 +118,7 @@ $VMPW = $sutData.OS_User_PWD
 	} elseif ($hypervisor_Type -eq "vBox"){
 		CopyFilestoSUT
 	} elseif ($hypervisor_Type -eq "vmwks"){
-		CopyFilestoSUT
+		CopyFilestoSUT $VMX_Path
 	}
 
 # Get Testcase script information
@@ -153,7 +153,7 @@ do {
 		} elseif ($hypervisor_Type -eq "vBox") {
 			ExecuteSUTProvisionScript
 		} elseif ($hypervisor_Type -eq "vmwks") {
-			ExecuteSUTProvisionScript
+			ExecuteSUTProvisionScript $VMX_Path
 		}
 	}
 	$counter++
@@ -188,13 +188,21 @@ If ($SelPASS -eq $null)	{
 }
 # Take a Snapshot named PostProvision
 writeLog("CreateSnapshot is creating a PostProvision Snapshot of the SUT")
-if (! (CreateSnapshot $vmName $MAXWAITSECS)) {
-	writeLog("${vmName} failed to Snapshot.")
-	$AgentStatus = $False
-	return $AgentStatus
-	Break
+if ($hypervisor_Type -eq "vmwks") {
+	if (! (CreateSnapshot $VMX_Path)) {
+		writeLog("${vmName} failed to Snapshot.")
+		$AgentStatus = $False
+		return $AgentStatus
+		Break
+	}
+} else{
+	if (! (CreateSnapshot $vmName $MAXWAITSECS)) {
+		writeLog("${vmName} failed to Snapshot.")
+		$AgentStatus = $False
+		return $AgentStatus
+		Break
+	}
 }
-
 # wait 10 seconds
 writeLog ("Pausing 10 seconds")
 pause 10

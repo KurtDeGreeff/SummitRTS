@@ -138,7 +138,7 @@ if ($AgentStatus = $true) {
 	} elseif ($hypervisor_Type -eq "vBox") {
 		DeleteVm $vmName
 	} elseif ($hypervisor_Type -eq "vmwks") {
-		DeleteVm $vmName
+		DeleteVm $VMX_Path
 	}
 
 	# wait  seconds
